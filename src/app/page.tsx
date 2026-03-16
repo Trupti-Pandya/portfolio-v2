@@ -207,7 +207,7 @@ export default function Home() {
         </div>
         <h2 className="display-h" style={{ marginBottom: "0" }}>Selected<br /><em>work.</em></h2>
         <div className="projects-wrap">
-          <div className="proj">
+          <a href="https://github.com/Trupti-Pandya/HireAI" target="_blank" rel="noopener noreferrer" className="proj" style={{ textDecoration: "none", color: "inherit" }}>
             <div className="proj-num">01</div>
             <div className="proj-content">
               <div className="proj-label">MSc Dissertation · 2025</div>
@@ -217,8 +217,8 @@ export default function Home() {
               <div className="proj-stack"><span className="stack-tag">Next.js</span><span className="stack-tag">TypeScript</span><span className="stack-tag">RAG</span><span className="stack-tag">Vector DB</span><span className="stack-tag">DeepEval</span><span className="stack-tag">Auth</span><span className="stack-tag">Guardrails</span></div>
             </div>
             <div className="proj-arrow">→</div>
-          </div>
-          <div className="proj">
+          </a>
+          <a href="https://github.com/Trupti-Pandya/Career-copilot" target="_blank" rel="noopener noreferrer" className="proj" style={{ textDecoration: "none", color: "inherit" }}>
             <div className="proj-num">02</div>
             <div className="proj-content">
               <div className="proj-label">Full Stack GenAI · 2025</div>
@@ -228,7 +228,7 @@ export default function Home() {
               <div className="proj-stack"><span className="stack-tag">Next.js</span><span className="stack-tag">TypeScript</span><span className="stack-tag">LLM Orchestration</span><span className="stack-tag">Prompt Templates</span><span className="stack-tag">Session Mgmt</span></div>
             </div>
             <div className="proj-arrow">→</div>
-          </div>
+          </a>
         </div>
       </div>
 
