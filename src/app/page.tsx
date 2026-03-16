@@ -106,7 +106,7 @@ export default function Home() {
           <div className="sec-line"></div>
           <div className="sec-label">about.md</div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "start" }}>
+        <div className="about-grid">
           <div>
             <h2 className="display-h">Builder of<br /><em>intelligent</em><br />systems.</h2>
           </div>
