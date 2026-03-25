@@ -353,37 +353,47 @@ nav{
 ::-webkit-scrollbar-thumb:hover{background:var(--lime)}
 ::selection{background:var(--lime);color:#060608}
 
+/* ── SCROLL INDICATOR (mobile/tablet only) ── */
+.scroll-indicator{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--lime);
+  opacity:0.35;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  animation:scroll-bounce 2.5s ease-in-out infinite;
+}
+.scroll-indicator-line{
+  width:1px;
+  height:28px;
+  background:linear-gradient(to bottom,var(--lime),transparent);
+}
+@keyframes scroll-bounce{
+  0%,100%{transform:translateX(-50%) translateY(0);opacity:0.35}
+  50%{transform:translateX(-50%) translateY(10px);opacity:0.65}
+}
+
+/* ── DESKTOP SAFETY: always show terminal ── */
+@media (min-width:1025px){
+  .hero-right{opacity:1 !important;transform:none !important}
+}
+
 /* ═══════════════════════════════════════════════════ */
 /* ─── RESPONSIVE DESIGN ─── */
 /* ═══════════════════════════════════════════════════ */
 
+/* ── TABLET LANDSCAPE & SMALL DESKTOPS (≤ 1024px) ── */
 @media (max-width: 1024px) {
-  .hero { grid-template-columns: 1fr; padding-top: 100px; }
-  .hero-left { border-right: none; border-bottom: 1px solid var(--grey); padding: 60px 48px; }
-  .hero-right { padding: 32px 48px; min-height: 520px; }
-  .terminal-box { min-height: 480px; }
-  .hero-bg-text { font-size: 160px; bottom: -50px; left: -20px; }
-
-  .about-grid { grid-template-columns: 1fr; gap: 40px; }
-
-  .skills-layout { grid-template-columns: 1fr; }
-  .skills-sidebar { border-right: none; border-bottom: 1px solid var(--grey); padding: 32px; display: flex; flex-wrap: wrap; gap: 12px; }
-  .skills-sidebar-label { width: 100%; margin-bottom: 8px; }
-  .skills-nav-item { border-bottom: none; border: 1px solid var(--grey); padding: 8px 16px; border-radius: 20px; justify-content: center; }
-  .skills-nav-item .ind { display: none; }
-  .skills-nav-item.active { background: var(--lime-glow); border-color: var(--lime); }
-  .skills-nav-item.active,.skills-nav-item:hover { padding-left: 16px; }
-
-  .exp-wrap { grid-template-columns: 1fr; }
-  .exp-left { border-right: none; border-bottom: 1px solid var(--grey); padding: 48px; }
-
-  .edu-grid { grid-template-columns: 1fr; }
-
-  .contact-split { grid-template-columns: 1fr; gap: 48px; }
-}
-
-@media (max-width: 768px) {
-  nav { padding: 16px 20px; }
+  /* nav: show hamburger, collapse links into dropdown */
+  nav { padding: 16px 32px; }
   .hamburger { display: flex; }
   .nav-links {
     display: none;
@@ -392,16 +402,101 @@ nav{
     background: rgba(6,6,8,0.97);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--grey);
-    padding: 20px;
+    padding: 24px 32px;
     gap: 16px;
   }
   .nav-links.nav-open { display: flex; }
-  .nav-links a { font-size: 13px; padding: 4px 0; }
+  .nav-links a { font-size: 13px; padding: 6px 0; }
 
-  .hero { padding-top: 80px; }
-  .hero-left { padding: 40px 20px; }
-  .hero-right { padding: 20px; min-height: 460px; }
-  .terminal-box { min-height: 420px; }
+  /* scroll-snap: halt at landing + terminal */
+  html { scroll-snap-type: y proximity; }
+
+  /* hero: fullscreen landing → terminal reveals on scroll */
+  .hero { grid-template-columns: 1fr; padding-top: 80px; min-height: auto; }
+  .hero-left {
+    border-right: none;
+    border-bottom: none;
+    padding: 48px 32px 0;
+    min-height: calc(100dvh - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    scroll-snap-align: start;
+  }
+  .scroll-indicator { display: flex; }
+
+  /* tall vertical terminal – fills most of the viewport */
+  .hero-right {
+    padding: 32px;
+    min-height: 85dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .terminal-box { min-height: calc(85dvh - 64px); }
+  .hero-bg-text { font-size: 140px; bottom: -40px; left: -16px; }
+  .hero-name { font-size: clamp(60px, 10vw, 100px); }
+
+  /* sections */
+  .section { padding: 80px 32px; }
+  .sec-marker { margin-bottom: 48px; }
+  .display-h { margin-bottom: 48px; }
+
+  /* about */
+  .about-grid { grid-template-columns: 1fr; gap: 36px; }
+
+  /* skills: horizontal pill nav */
+  .skills-layout { grid-template-columns: 1fr; }
+  .skills-sidebar {
+    border-right: none; border-bottom: 1px solid var(--grey);
+    padding: 24px 28px; display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .skills-sidebar-label { width: 100%; margin-bottom: 6px; }
+  .skills-nav-item {
+    border-bottom: none; border: 1px solid var(--grey);
+    padding: 7px 14px; border-radius: 20px; justify-content: center;
+  }
+  .skills-nav-item .ind { display: none; }
+  .skills-nav-item.active { background: var(--lime-glow); border-color: var(--lime); }
+  .skills-nav-item.active, .skills-nav-item:hover { padding-left: 14px; }
+  .skills-main { padding: 28px 28px; }
+  .skill-bar-item { grid-template-columns: 140px 1fr 36px; }
+
+  /* projects: keep 3-col but tighter */
+  .proj { gap: 24px; padding: 36px 0; }
+  .proj-num { font-size: 48px; }
+  .proj-name { font-size: 34px; }
+  .proj-desc { font-size: 14px; }
+  .proj-impact { font-size: 15px; }
+
+  /* experience: single-column */
+  .exp-wrap { grid-template-columns: 1fr; }
+  .exp-left { border-right: none; border-bottom: 1px solid var(--grey); padding: 36px 32px; }
+  .exp-right { padding: 36px 32px; }
+  .exp-co { font-size: 40px; }
+  .exp-period-big { font-size: 60px; }
+
+  /* education: single-column */
+  .edu-grid { grid-template-columns: 1fr; }
+  .edu-card { padding: 36px 32px; }
+
+  /* contact */
+  .contact-split { grid-template-columns: 1fr; gap: 40px; }
+  .contact-sub { max-width: 100%; }
+
+  /* footer */
+  .footer { padding: 24px 32px; }
+}
+
+/* ── TABLET PORTRAIT (≤ 768px) ── */
+@media (max-width: 768px) {
+  nav { padding: 14px 20px; }
+  .nav-links { padding: 20px; }
+  .nav-id { font-size: 11px; letter-spacing: 0.15em; }
+
+  .hero-left { padding: 36px 20px 0; }
+  .hero-right { padding: 20px; min-height: 88dvh; }
+  .terminal-box { min-height: calc(88dvh - 40px); }
   .hero-name { font-size: clamp(48px, 12vw, 72px); }
   .hero-bg-text { font-size: 80px; bottom: -20px; left: -10px; }
   .hero-cta { flex-direction: column; width: 100%; }
@@ -410,53 +505,122 @@ nav{
   .terminal-body { padding: 0; }
   .t-key { min-width: 90px !important; }
 
-  .section { padding: 60px 20px; }
-  .sec-marker { margin-bottom: 40px; }
-  .display-h { font-size: clamp(36px, 10vw, 48px); margin-bottom: 40px !important; }
+  .section { padding: 56px 20px; }
+  .sec-marker { margin-bottom: 32px; gap: 12px; }
+  .display-h { font-size: clamp(36px, 10vw, 48px); margin-bottom: 36px !important; }
 
-  .about-grid { gap: 32px; }
+  .about-grid { gap: 28px; }
 
-  .skills-sidebar { padding: 24px 20px; gap: 8px; }
-  .skills-nav-item { padding: 6px 12px; font-size: 11px; flex: 1 1 auto; text-align: center; justify-content: center; }
-  .skills-main { padding: 24px 20px; }
-
-  .skill-panel-title { font-size: 28px; }
-  .skill-bar-item { grid-template-columns: 1fr; gap: 8px; margin-bottom: 20px; }
+  /* skills: smaller pills, tighter panel */
+  .skills-sidebar { padding: 20px; gap: 8px; }
+  .skills-nav-item {
+    padding: 6px 12px; font-size: 11px;
+    flex: 1 1 auto; text-align: center; justify-content: center;
+  }
+  .skills-main { padding: 20px; }
+  .skill-panel-title { font-size: 26px; }
+  .skill-bar-item { grid-template-columns: 1fr; gap: 6px; margin-bottom: 18px; }
+  .skill-bar-label { font-size: 11px; }
   .skill-bar-track { margin: 4px 0; }
-  .skill-bar-pct { text-align: right; }
+  .skill-bar-pct { text-align: right; font-size: 10px; }
 
-  .proj { grid-template-columns: 1fr; gap: 16px; padding: 32px 0; border-left: none; }
+  /* projects: single-column */
+  .proj { grid-template-columns: 1fr; gap: 12px; padding: 28px 0; border-left: none; }
   .proj:hover { padding-left: 0; }
   .proj-arrow { display: none; }
-  .proj-num { font-size: 40px; margin-bottom: 8px; }
-  .proj-name { font-size: 32px; }
+  .proj-num { font-size: 36px; margin-bottom: 4px; }
+  .proj-name { font-size: 28px; }
+  .proj-desc { font-size: 14px; max-width: 100%; }
+  .proj-impact { font-size: 14px; max-width: 100%; }
 
-  .exp-left, .exp-right { padding: 32px 20px; }
-  .exp-co { font-size: 36px; }
-  .exp-period-big { font-size: 56px; }
+  /* experience */
+  .exp-left, .exp-right { padding: 28px 20px; }
+  .exp-co { font-size: 32px; }
+  .exp-period-big { font-size: 48px; }
+  .exp-bullets li { font-size: 14px; }
 
-  .edu-card { padding: 32px 20px; }
-  .edu-deg { font-size: 24px; }
-  .edu-card::after { font-size: 70px; right: -5px; bottom: -10px; }
+  /* education */
+  .edu-card { padding: 28px 20px; }
+  .edu-deg { font-size: 22px; }
+  .edu-card::after { font-size: 64px; right: -5px; bottom: -10px; }
+  .cert-strip { flex-direction: column; text-align: center; gap: 10px; padding: 20px; }
+  .cert-strip-text { font-size: 12px; }
+  .cert-strip-badge { font-size: 16px; }
 
-  .cert-strip { flex-direction: column; text-align: center; gap: 12px; padding: 24px 20px; }
-
-  .contact-split { gap: 32px; }
+  /* contact */
+  .contact-split { gap: 28px; }
   .contact-big { font-size: clamp(36px, 10vw, 48px); }
-  .clink { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px; }
-  .clink-arr { align-self: flex-end; margin-top: -24px; }
+  .contact-sub { font-size: 14px; }
+  .clink { padding: 16px 20px; }
+  .clink-val { font-size: 14px; }
 
-  .footer { flex-direction: column; gap: 16px; padding: 24px 20px; text-align: center; }
+  /* footer */
+  .footer { flex-direction: column; gap: 14px; padding: 20px; text-align: center; }
   .f-status { justify-content: center; }
 
   .floating-binary { display: none; }
 }
 
+/* ── SMALL MOBILE (≤ 480px) ── */
 @media (max-width: 480px) {
-  .nav-links a { font-size: 12px; }
-  .hero-name { letter-spacing: -0.02em; }
+  nav { padding: 12px 16px; }
+  .nav-links { padding: 16px; gap: 14px; }
+  .nav-id { font-size: 10px; }
+
+  .hero-left { padding: 28px 16px 0; }
+  .hero-right { padding: 12px; min-height: 90dvh; }
+  .terminal-box { min-height: calc(90dvh - 24px); }
+  .hero-name { font-size: clamp(40px, 14vw, 56px); letter-spacing: -0.02em; }
+  .hero-bg-text { font-size: 56px; bottom: -14px; left: -6px; }
+  .hero-title { font-size: 11px; letter-spacing: 0.12em; margin-top: 16px; margin-bottom: 28px; }
+  .prompt-line { font-size: 11px; margin-bottom: 20px; }
+
+  .section { padding: 44px 16px; }
+  .sec-marker { margin-bottom: 24px; gap: 10px; }
+  .sec-num { font-size: 10px; padding: 3px 6px; }
+  .sec-label { font-size: 10px; }
+  .display-h { font-size: clamp(30px, 9vw, 40px); margin-bottom: 28px !important; }
+
+  .skills-sidebar { padding: 16px; gap: 6px; }
+  .skills-nav-item { padding: 5px 10px; font-size: 10px; }
+  .skills-main { padding: 16px; }
+  .skill-panel-title { font-size: 22px; }
+  .skill-chips { gap: 6px; }
+  .chip { font-size: 11px; padding: 4px 10px; }
+
+  .proj-num { font-size: 30px; }
+  .proj-name { font-size: 24px; }
+  .proj-label { font-size: 10px; }
+  .proj-desc { font-size: 13px; }
+  .proj-impact { font-size: 13px; }
   .proj-stack { gap: 4px; }
   .stack-tag { font-size: 10px; padding: 2px 6px; }
+
+  .exp-left, .exp-right { padding: 24px 16px; }
+  .exp-co { font-size: 28px; }
+  .exp-meta { font-size: 10px; }
+  .exp-period-big { font-size: 40px; }
+  .exp-bullets { margin-top: 16px; }
+  .exp-bullets li { font-size: 13px; padding-left: 16px; }
+
+  .edu-card { padding: 24px 16px; }
+  .edu-deg { font-size: 20px; }
+  .edu-uni { font-size: 11px; }
+  .edu-modules { font-size: 12px; }
+  .edu-card::after { font-size: 52px; }
+  .cert-strip { padding: 16px; }
+  .cert-strip-text { font-size: 11px; letter-spacing: 0.06em; }
+  .cert-strip-badge { font-size: 14px; }
+
+  .contact-big { font-size: clamp(30px, 9vw, 40px); }
+  .contact-sub { font-size: 13px; }
+  .clink { padding: 14px 16px; }
+  .clink-label { font-size: 10px; }
+  .clink-val { font-size: 13px; }
+  .clink-arr { font-size: 16px; }
+
+  .footer p { font-size: 10px; }
+  .f-status { font-size: 10px; }
 }
 
 /* ── DARK MODE (shadcn) ── */

@@ -287,8 +287,16 @@ export const AsciiArt: React.FC<AsciiArtProps> = ({
       const cols = asciiData[0]?.length || 0;
       if (cols === 0) return;
 
-      const charWidth = containerWidth / cols;
-      const charHeight = containerHeight / rows;
+      // Maintain character proportions – contain behavior
+      // Monospace chars have ~0.55 width:height ratio
+      const CHAR_RATIO = 0.55;
+      const fitW = containerWidth / cols;
+      const fitH = (containerHeight / rows) * CHAR_RATIO;
+      const base = Math.min(fitW, fitH);
+      const charWidth = base;
+      const charHeight = base / CHAR_RATIO;
+      const offsetX = (containerWidth - charWidth * cols) / 2;
+      const offsetY = (containerHeight - charHeight * rows) / 2;
       const fontSize = Math.min(charWidth * 1.8, charHeight * 1.2);
 
       ctx.font = `${fontSize}px ${fontFamily}`;
@@ -302,8 +310,8 @@ export const AsciiArt: React.FC<AsciiArtProps> = ({
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
           const pixel = asciiData[y][x];
-          const cx = x * charWidth + charWidth / 2;
-          const cy = y * charHeight;
+          const cx = offsetX + x * charWidth + charWidth / 2;
+          const cy = offsetY + y * charHeight;
 
           if (animationStyle === "typewriter" && charIndex >= revealedChars) {
             charIndex++;

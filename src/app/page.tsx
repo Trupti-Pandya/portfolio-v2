@@ -1,12 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import InteractiveTerminal from "../components/InteractiveTerminal";
 
 export default function Home() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSection, setActiveSection] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  /* ── parallax for terminal on mobile/tablet ── */
+  const heroRightRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: terminalScroll } = useScroll({
+    target: heroRightRef,
+    offset: ["start end", "start 0.35"],
+  });
+  const tY = useTransform(terminalScroll, [0, 1], [120, 0]);
+  const tOpacity = useTransform(terminalScroll, [0, 0.5], [0, 1]);
+  const tScale = useTransform(terminalScroll, [0, 1], [0.9, 1]);
 
   /* ── scroll tracking: progress bar + active nav link ── */
   useEffect(() => {
@@ -176,10 +187,27 @@ export default function Home() {
               ./contact.sh
             </a>
           </div>
+          {/* scroll indicator – fades out once user scrolls */}
+          <div
+            className="scroll-indicator"
+            aria-hidden="true"
+            style={{
+              opacity: scrollProgress > 0.01 ? 0 : undefined,
+              transition: "opacity 0.4s ease",
+              pointerEvents: scrollProgress > 0.01 ? "none" : undefined,
+            }}
+          >
+            <span>scroll</span>
+            <div className="scroll-indicator-line" />
+          </div>
         </div>
-        <div className="hero-right">
+        <motion.div
+          ref={heroRightRef}
+          className="hero-right"
+          style={{ y: tY, opacity: tOpacity, scale: tScale }}
+        >
           <InteractiveTerminal />
-        </div>
+        </motion.div>
       </div>
 
       <div className="divider">
