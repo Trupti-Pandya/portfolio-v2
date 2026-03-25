@@ -154,10 +154,9 @@ export default function InteractiveTerminal() {
           src="/image.png"
           charset="dense"
           color="#b8ff57"
-          animationStyle="matrix"
-          animated={true}
-          animateOnView={true}
-          resolution={isMobile ? 150 : 400}
+          animated={false}
+          animationStyle="none"
+          resolution={isMobile ? 250 : 500}
           objectFit="cover"
           className="absolute inset-0 w-full h-full"
         />

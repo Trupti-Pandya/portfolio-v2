@@ -426,14 +426,14 @@ nav{
   }
   .scroll-indicator { display: flex; }
 
-  /* tall vertical terminal – fills most of the viewport */
+  /* terminal section */
   .hero-right {
     padding: 32px;
-    min-height: 85dvh;
+    min-height: 60dvh;
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-  .terminal-box { min-height: calc(85dvh - 64px); }
+  .terminal-box { min-height: calc(60dvh - 64px); }
   .hero-bg-text { font-size: 140px; bottom: -40px; left: -16px; }
   .hero-name { font-size: clamp(60px, 10vw, 100px); }
 
@@ -495,8 +495,8 @@ nav{
   .nav-id { font-size: 11px; letter-spacing: 0.15em; }
 
   .hero-left { padding: 36px 20px 0; }
-  .hero-right { padding: 20px; min-height: 88dvh; }
-  .terminal-box { min-height: calc(88dvh - 40px); }
+  .hero-right { padding: 20px; min-height: 55dvh; }
+  .terminal-box { min-height: calc(55dvh - 40px); }
   .hero-name { font-size: clamp(48px, 12vw, 72px); }
   .hero-bg-text { font-size: 80px; bottom: -20px; left: -10px; }
   .hero-cta { flex-direction: column; width: 100%; }
@@ -568,8 +568,8 @@ nav{
   .nav-id { font-size: 10px; }
 
   .hero-left { padding: 28px 16px 0; }
-  .hero-right { padding: 12px; min-height: 90dvh; }
-  .terminal-box { min-height: calc(90dvh - 24px); }
+  .hero-right { padding: 12px; min-height: 50dvh; }
+  .terminal-box { min-height: calc(50dvh - 24px); }
   .hero-name { font-size: clamp(40px, 14vw, 56px); letter-spacing: -0.02em; }
   .hero-bg-text { font-size: 56px; bottom: -14px; left: -6px; }
   .hero-title { font-size: 11px; letter-spacing: 0.12em; margin-top: 16px; margin-bottom: 28px; }
