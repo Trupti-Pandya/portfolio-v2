@@ -208,7 +208,8 @@ nav{
 @media (max-width: 1024px) {
   .hero { grid-template-columns: 1fr; padding-top: 100px; }
   .hero-left { border-right: none; border-bottom: 1px solid var(--grey); padding: 60px 48px; }
-  .hero-right { padding: 60px 48px; }
+  .hero-right { padding: 32px 48px; min-height: 520px; }
+  .terminal-box { min-height: 480px; }
   .hero-bg-text { font-size: 160px; bottom: -50px; left: -20px; }
 
   .about-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -233,13 +234,15 @@ nav{
   .nav-links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-start; width: 100%; }
 
   .hero { padding-top: 130px; }
-  .hero-left, .hero-right { padding: 40px 20px; }
+  .hero-left { padding: 40px 20px; }
+  .hero-right { padding: 20px; min-height: 460px; }
+  .terminal-box { min-height: 420px; }
   .hero-name { font-size: clamp(48px, 12vw, 72px); }
   .hero-bg-text { font-size: 80px; bottom: -20px; left: -10px; }
   .hero-cta { flex-direction: column; width: 100%; }
   .hero-cta .btn { justify-content: center; text-align: center; }
 
-  .terminal-body { padding: 16px; }
+  .terminal-body { padding: 0; }
   .t-key { min-width: 90px !important; }
 
   .section { padding: 60px 20px; }

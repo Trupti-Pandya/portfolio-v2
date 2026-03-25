@@ -65,6 +65,14 @@ const COMMANDS: Record<string, OutputLine[]> = {
 export default function InteractiveTerminal() {
   const [tokens, setTokens] = useState(2847);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const [inputVal, setInputVal] = useState("");
   const [focused, setFocused] = useState(false);
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
@@ -149,7 +157,7 @@ export default function InteractiveTerminal() {
           animationStyle="matrix"
           animated={true}
           animateOnView={true}
-          resolution={400}
+          resolution={isMobile ? 150 : 400}
           objectFit="cover"
           className="absolute inset-0 w-full h-full"
         />
@@ -165,27 +173,11 @@ export default function InteractiveTerminal() {
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "18px" }}>
 
           {/* Top-left: Hi There + hint */}
-          <div style={{ maxWidth: "54%" }}>
-            <pre style={{
-              fontFamily: "var(--mono)",
-              fontSize: "7.5px",
-              lineHeight: "1.45",
-              color: "#b8ff57",
-              textShadow: "0 0 14px #b8ff57, 0 0 30px rgba(184,255,87,0.3)",
-              margin: 0,
-              whiteSpace: "pre",
-            }}>
+          <div className="terminal-greeting">
+            <pre className="terminal-figlet">
               {HI_THERE}
             </pre>
-            <div style={{
-              marginTop: "10px",
-              fontFamily: "var(--mono)",
-              fontSize: "10px",
-              color: "rgba(184,255,87,0.55)",
-              lineHeight: 1.9,
-              borderLeft: "1px solid rgba(184,255,87,0.3)",
-              paddingLeft: "10px",
-            }}>
+            <div className="terminal-hint">
               <span>interactive terminal · type </span>
               <span style={{ color: "#b8ff57", textShadow: "0 0 6px #b8ff57" }}>help</span>
               <span> to explore</span>
@@ -201,7 +193,7 @@ export default function InteractiveTerminal() {
               <div
                 ref={historyBoxRef}
                 style={{
-                  maxHeight: "160px",
+                  maxHeight: isMobile ? "90px" : "160px",
                   overflowY: "auto",
                   marginBottom: "8px",
                   paddingRight: "4px",
@@ -308,6 +300,47 @@ export default function InteractiveTerminal() {
       <style>{`
         div[style*="scrollbar-width"]::-webkit-scrollbar { display: none; }
         input::placeholder { color: rgba(184,255,87,0.2); }
+
+        .terminal-greeting {
+          max-width: 54%;
+          overflow: hidden;
+        }
+        .terminal-figlet {
+          font-family: var(--mono);
+          font-size: 7.5px;
+          line-height: 1.45;
+          color: #b8ff57;
+          text-shadow: 0 0 14px #b8ff57, 0 0 30px rgba(184,255,87,0.3);
+          margin: 0;
+          white-space: pre;
+          transform-origin: top left;
+        }
+        .terminal-hint {
+          margin-top: 10px;
+          font-family: var(--mono);
+          font-size: 10px;
+          color: rgba(184,255,87,0.55);
+          line-height: 1.9;
+          border-left: 1px solid rgba(184,255,87,0.3);
+          padding-left: 10px;
+        }
+
+        @media (max-width: 1024px) {
+          .terminal-greeting { max-width: 70%; }
+          .terminal-figlet { font-size: 6px; }
+        }
+        @media (max-width: 768px) {
+          .terminal-greeting { max-width: 100%; }
+          .terminal-figlet {
+            font-size: 4.5px;
+            line-height: 1.4;
+          }
+          .terminal-hint { font-size: 9px; margin-top: 6px; }
+        }
+        @media (max-width: 480px) {
+          .terminal-figlet { font-size: 3.5px; line-height: 1.35; }
+          .terminal-hint { display: none; }
+        }
       `}</style>
     </div>
   );
