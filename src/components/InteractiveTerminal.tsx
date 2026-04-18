@@ -62,6 +62,58 @@ const COMMANDS: Record<string, OutputLine[]> = {
   ],
 };
 
+function TypeHereHint({ visible }: { visible: boolean }) {
+  const PHRASE = "type here";
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "holding" | "erasing" | "pause">("typing");
+  const [cursorOn, setCursorOn] = useState(true);
+
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    if (phase === "typing") {
+      if (text.length < PHRASE.length) {
+        t = setTimeout(() => setText(PHRASE.slice(0, text.length + 1)), 110);
+      } else {
+        t = setTimeout(() => setPhase("holding"), 1400);
+      }
+    } else if (phase === "holding") {
+      t = setTimeout(() => setPhase("erasing"), 0);
+    } else if (phase === "erasing") {
+      if (text.length > 0) {
+        t = setTimeout(() => setText(text.slice(0, -1)), 60);
+      } else {
+        t = setTimeout(() => setPhase("pause"), 500);
+      }
+    } else {
+      t = setTimeout(() => setPhase("typing"), 300);
+    }
+    return () => clearTimeout(t);
+  }, [text, phase]);
+
+  useEffect(() => {
+    const i = setInterval(() => setCursorOn((v) => !v), 500);
+    return () => clearInterval(i);
+  }, []);
+
+  const cursorChar = cursorOn ? "_" : " ";
+  const slot = (text + cursorChar).padEnd(10, " ");
+  const top = "+ - - - - - - - - - +";
+  const empty = "|                   |";
+  const row = `|    ${slot}     |`;
+  const tail = "  v";
+
+  return (
+    <pre className={`type-here-hint${visible ? " visible" : ""}`} aria-hidden="true">
+      {`${top}
+${empty}
+${row}
+${empty}
+${top}
+${tail}`}
+    </pre>
+  );
+}
+
 export default function InteractiveTerminal() {
   const [tokens, setTokens] = useState(2847);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -150,21 +202,27 @@ export default function InteractiveTerminal() {
       <div className="terminal-body" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
 
         {/* ASCII background */}
-        <AsciiArt
-          src="/image.png"
-          charset="dense"
-          color="#b8ff57"
-          animated={false}
-          animationStyle="none"
-          resolution={isMobile ? 250 : 500}
-          objectFit="cover"
-          className="absolute inset-0 w-full h-full"
-        />
+        <div
+          className={`ascii-bg-wrap${history.length > 0 ? " chat-active" : ""}`}
+          style={{ position: "absolute", inset: 0 }}
+          aria-hidden="true"
+        >
+          <AsciiArt
+            src="/image.png"
+            charset="dense"
+            color="#b8ff57"
+            animated={false}
+            animationStyle="none"
+            resolution={isMobile ? 250 : 500}
+            objectFit="cover"
+            className="w-full h-full"
+          />
+        </div>
 
-        {/* Dark gradient fade at bottom for readability */}
+        {/* Very thin gradient only right at the bottom edge, for input readability */}
         <div style={{
-          position: "absolute", bottom: 0, left: 0, right: 0, height: "65%",
-          background: "linear-gradient(to top, rgba(6,6,8,0.97) 40%, rgba(6,6,8,0.6) 80%, transparent 100%)",
+          position: "absolute", bottom: 0, left: 0, right: 0, height: "18%",
+          background: "linear-gradient(to top, rgba(6,6,8,0.75) 0%, transparent 100%)",
           pointerEvents: "none",
         }} />
 
@@ -192,9 +250,9 @@ export default function InteractiveTerminal() {
               <div
                 ref={historyBoxRef}
                 style={{
-                  maxHeight: isMobile ? "90px" : "160px",
+                  maxHeight: isMobile ? "220px" : "460px",
                   overflowY: "auto",
-                  marginBottom: "8px",
+                  marginBottom: "10px",
                   paddingRight: "4px",
                   scrollbarWidth: "none",
                 }}
@@ -202,16 +260,16 @@ export default function InteractiveTerminal() {
                 {history.map((item, i) => (
                   <div key={i} style={{ marginBottom: "10px" }}>
                     {/* Command line */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "3px" }}>
-                      <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "rgba(184,255,87,0.4)" }}>❯</span>
-                      <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "#b8ff57", letterSpacing: "0.05em" }}>{item.command}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: "14px", color: "rgba(184,255,87,0.4)" }}>❯</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: "14px", color: "#b8ff57", letterSpacing: "0.05em" }}>{item.command}</span>
                     </div>
                     {/* Output lines */}
-                    <div style={{ paddingLeft: "16px", borderLeft: "1px solid rgba(184,255,87,0.15)" }}>
+                    <div style={{ paddingLeft: "18px", borderLeft: "2px solid rgba(184,255,87,0.2)" }}>
                       {item.lines.map((line, j) => (
-                        <div key={j} style={{ fontFamily: "var(--mono)", fontSize: "10.5px", lineHeight: 1.7 }}>
+                        <div key={j} style={{ fontFamily: "var(--mono)", fontSize: "14px", lineHeight: 1.8 }}>
                           {line.type === "label" && (
-                            <span style={{ color: "#b8ff57", opacity: 0.9, letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "9px" }}>
+                            <span style={{ color: "#b8ff57", opacity: 0.9, letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "12px" }}>
                               ── {line.text} ──
                             </span>
                           )}
@@ -242,54 +300,57 @@ export default function InteractiveTerminal() {
             )}
 
             {/* Input bar */}
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              borderTop: `1px solid ${focused ? "rgba(184,255,87,0.5)" : "rgba(184,255,87,0.15)"}`,
-              paddingTop: "10px",
-              transition: "border-color 0.2s",
-              boxShadow: focused ? "0 -4px 20px rgba(184,255,87,0.06)" : "none",
-            }}>
-              <span style={{
-                fontFamily: "var(--mono)",
-                fontSize: "12px",
-                color: "#b8ff57",
-                textShadow: focused ? "0 0 8px #b8ff57" : "none",
-                transition: "text-shadow 0.2s",
-                flexShrink: 0,
-              }}>❯</span>
-              <form
-                onSubmit={(e) => { e.preventDefault(); handleCommand(inputVal); setInputVal(""); }}
-                style={{ flex: 1, display: "flex", alignItems: "center" }}
-              >
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputVal}
-                  onChange={(e) => setInputVal(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
-                  placeholder="enter command..."
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "#b8ff57",
-                    fontFamily: "var(--mono)",
-                    fontSize: "12px",
-                    width: "100%",
-                    outline: "none",
-                    caretColor: "#b8ff57",
-                    letterSpacing: "0.04em",
-                  }}
-                  autoComplete="off"
-                  spellCheck="false"
-                />
-              </form>
-              {!inputVal && (
-                <span className="blink" style={{ flexShrink: 0 }} />
-              )}
+            <div style={{ position: "relative" }}>
+              <TypeHereHint visible={!focused && !inputVal && history.length === 0} />
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                borderTop: `1px solid ${focused ? "rgba(184,255,87,0.5)" : "rgba(184,255,87,0.15)"}`,
+                paddingTop: "10px",
+                transition: "border-color 0.2s",
+                boxShadow: focused ? "0 -4px 20px rgba(184,255,87,0.06)" : "none",
+              }}>
+                <span style={{
+                  fontFamily: "var(--mono)",
+                  fontSize: "15px",
+                  color: "#b8ff57",
+                  textShadow: focused ? "0 0 8px #b8ff57" : "none",
+                  transition: "text-shadow 0.2s",
+                  flexShrink: 0,
+                }}>❯</span>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleCommand(inputVal); setInputVal(""); }}
+                  style={{ flex: 1, display: "flex", alignItems: "center" }}
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputVal}
+                    onChange={(e) => setInputVal(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
+                    placeholder="enter command..."
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "#b8ff57",
+                      fontFamily: "var(--mono)",
+                      fontSize: "15px",
+                      width: "100%",
+                      outline: "none",
+                      caretColor: "#b8ff57",
+                      letterSpacing: "0.04em",
+                    }}
+                    autoComplete="off"
+                    spellCheck="false"
+                  />
+                </form>
+                {!inputVal && (
+                  <span className="blink" style={{ flexShrink: 0 }} />
+                )}
+              </div>
             </div>
           </div>
 
@@ -300,13 +361,22 @@ export default function InteractiveTerminal() {
         div[style*="scrollbar-width"]::-webkit-scrollbar { display: none; }
         input::placeholder { color: rgba(184,255,87,0.2); }
 
+        .ascii-bg-wrap {
+          transition: filter 0.55s ease, opacity 0.55s ease;
+          will-change: filter, opacity;
+        }
+        .ascii-bg-wrap.chat-active {
+          filter: blur(6px);
+          opacity: 0.45;
+        }
+
         .terminal-greeting {
           max-width: 54%;
           overflow: hidden;
         }
         .terminal-figlet {
           font-family: var(--mono);
-          font-size: 7.5px;
+          font-size: 9px;
           line-height: 1.45;
           color: #b8ff57;
           text-shadow: 0 0 14px #b8ff57, 0 0 30px rgba(184,255,87,0.3);
@@ -315,30 +385,57 @@ export default function InteractiveTerminal() {
           transform-origin: top left;
         }
         .terminal-hint {
-          margin-top: 10px;
+          margin-top: 12px;
           font-family: var(--mono);
-          font-size: 10px;
+          font-size: 11px;
           color: rgba(184,255,87,0.55);
           line-height: 1.9;
           border-left: 1px solid rgba(184,255,87,0.3);
           padding-left: 10px;
         }
+        .type-here-hint {
+          position: absolute;
+          left: -2px;
+          bottom: calc(100% + 2px);
+          margin: 0;
+          padding: 0;
+          font-family: var(--mono);
+          font-size: 9px;
+          line-height: 1.25;
+          color: #b8ff57;
+          text-shadow: 0 0 6px rgba(184,255,87,0.55), 0 0 14px rgba(184,255,87,0.25);
+          white-space: pre;
+          pointer-events: none;
+          user-select: none;
+          opacity: 0;
+          transform: translateY(4px);
+          transition: opacity 0.45s ease, transform 0.45s ease;
+          z-index: 3;
+        }
+        .type-here-hint.visible {
+          opacity: 0.9;
+          transform: translateY(0);
+        }
 
         @media (max-width: 1024px) {
           .terminal-greeting { max-width: 70%; }
-          .terminal-figlet { font-size: 6px; }
+          .terminal-figlet { font-size: 7.5px; }
         }
         @media (max-width: 768px) {
           .terminal-greeting { max-width: 100%; }
           .terminal-figlet {
-            font-size: 4.5px;
+            font-size: 5.5px;
             line-height: 1.4;
           }
-          .terminal-hint { font-size: 9px; margin-top: 6px; }
+          .terminal-hint { font-size: 10px; margin-top: 8px; }
         }
         @media (max-width: 480px) {
-          .terminal-figlet { font-size: 3.5px; line-height: 1.35; }
+          .terminal-figlet { font-size: 4px; line-height: 1.35; }
           .terminal-hint { display: none; }
+          .type-here-hint { display: none; }
+        }
+        @media (max-width: 768px) {
+          .type-here-hint { font-size: 8px; }
         }
       `}</style>
     </div>
