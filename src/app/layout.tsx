@@ -10,13 +10,17 @@ export const metadata: Metadata = {
   title: "Trupti Pandya",
   description: "LLM Engineer & Generative AI Specialist portfolio.",
   icons: {
-    // SVG first so modern browsers prefer the crisp vector; PNG is the
-    // universal raster fallback. Replaces the default Next.js triangle.
+    // Cover every browser: .ico (Safari, which ignores SVG and auto-requests
+    // /favicon.ico), crisp SVG (Chrome/Firefox), and explicit small PNGs.
     icon: [
-      { url: "/icon.svg?v=2", type: "image/svg+xml" },
-      { url: "/icon.png?v=2", type: "image/png", sizes: "512x512" },
+      { url: "/favicon.ico?v=3", sizes: "any" },
+      { url: "/icon.svg?v=3", type: "image/svg+xml" },
+      { url: "/icon-32.png?v=3", type: "image/png", sizes: "32x32" },
+      { url: "/icon-16.png?v=3", type: "image/png", sizes: "16x16" },
+      { url: "/icon-192.png?v=3", type: "image/png", sizes: "192x192" },
     ],
-    apple: [{ url: "/apple-icon.png?v=2", sizes: "180x180" }],
+    apple: [{ url: "/apple-icon.png?v=3", sizes: "180x180" }],
+    shortcut: [{ url: "/favicon.ico?v=3" }],
   },
 };
 
