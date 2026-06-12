@@ -13,10 +13,10 @@ export const metadata: Metadata = {
     // SVG first so modern browsers prefer the crisp vector; PNG is the
     // universal raster fallback. Replaces the default Next.js triangle.
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/icon.svg?v=2", type: "image/svg+xml" },
+      { url: "/icon.png?v=2", type: "image/png", sizes: "512x512" },
     ],
-    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+    apple: [{ url: "/apple-icon.png?v=2", sizes: "180x180" }],
   },
 };
 
