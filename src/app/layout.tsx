@@ -9,6 +9,15 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-sans"
 export const metadata: Metadata = {
   title: "Trupti Pandya",
   description: "LLM Engineer & Generative AI Specialist portfolio.",
+  icons: {
+    // SVG first so modern browsers prefer the crisp vector; PNG is the
+    // universal raster fallback. Replaces the default Next.js triangle.
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+  },
 };
 
 export default function RootLayout({
