@@ -43,10 +43,13 @@ interface BookingDetails {
   email: string;
   preferredTime: string;
   reason: string;
+  company?: string;
+  notes?: string;
 }
 
 // Parse the booking JSON out of the held marker text. Tolerant of a missing
-// closing tag, but requires valid JSON with all four non-empty fields.
+// closing tag, but requires valid JSON with the four required fields non-empty.
+// Company and notes are optional.
 function parseBookingMarker(held: string): BookingDetails | null {
   const match = held.match(/\[\[BOOKING\]\]\s*(\{[\s\S]*?\})\s*(?:\[\[\/BOOKING\]\])?/);
   if (!match) return null;
@@ -56,8 +59,10 @@ function parseBookingMarker(held: string): BookingDetails | null {
     const email = String(obj.email ?? "").trim();
     const preferredTime = String(obj.preferredTime ?? "").trim();
     const reason = String(obj.reason ?? "").trim();
+    const company = String(obj.company ?? "").trim();
+    const notes = String(obj.notes ?? "").trim();
     if (name && email && preferredTime && reason) {
-      return { name, email, preferredTime, reason };
+      return { name, email, preferredTime, reason, company, notes };
     }
   } catch {
     // Malformed JSON — treat as no valid booking.

@@ -121,6 +121,8 @@ export async function sendBookingRequestToTrupti({
   visitorEmail,
   preferredTime,
   reason,
+  company,
+  notes,
   approveUrl,
   declineUrl,
 }: {
@@ -128,6 +130,8 @@ export async function sendBookingRequestToTrupti({
   visitorEmail: string;
   preferredTime: string;
   reason: string;
+  company?: string;
+  notes?: string;
   approveUrl: string;
   declineUrl: string;
 }) {
@@ -137,8 +141,10 @@ export async function sendBookingRequestToTrupti({
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
       ${detailRow("Name", visitorName)}
       ${detailRow("Email", `<a href="mailto:${visitorEmail}" style="color:${ACCENT};text-decoration:none;">${visitorEmail}</a>`)}
+      ${company ? detailRow("Company", company) : ""}
       ${detailRow("Requested", preferredTime)}
       ${detailRow("Reason", reason)}
+      ${notes ? detailRow("Notes", notes) : ""}
     </table>
     <table role="presentation" cellpadding="0" cellspacing="0"><tr>
       <td style="padding-right:12px;">${button(approveUrl, "✓ Approve")}</td>

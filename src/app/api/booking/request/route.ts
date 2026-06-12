@@ -3,11 +3,13 @@ import { createBookingRequest, resolveBaseUrl } from "@/lib/booking";
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, preferredTime, reason } = await req.json() as {
+    const { name, email, preferredTime, reason, company, notes } = await req.json() as {
       name: string;
       email: string;
       preferredTime: string;
       reason: string;
+      company?: string;
+      notes?: string;
     };
 
     if (!name || !email || !preferredTime || !reason) {
@@ -19,6 +21,8 @@ export async function POST(req: NextRequest) {
       email,
       preferredTime,
       reason,
+      company,
+      notes,
       baseUrl: resolveBaseUrl(req.nextUrl.origin),
     });
 

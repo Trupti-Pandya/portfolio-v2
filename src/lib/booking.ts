@@ -7,6 +7,9 @@ export interface BookingRequestInput {
   email: string;
   preferredTime: string;
   reason: string;
+  /** Optional extras collected by the assistant. */
+  company?: string;
+  notes?: string;
   /** Public origin of the deployment, used to build approve/decline links. */
   baseUrl: string;
 }
@@ -21,17 +24,29 @@ export async function createBookingRequest({
   email,
   preferredTime,
   reason,
+  company,
+  notes,
   baseUrl,
 }: BookingRequestInput): Promise<void> {
   const token = randomUUID();
   const approveUrl = `${baseUrl}/api/booking/approve/${token}`;
   const declineUrl = `${baseUrl}/api/booking/decline/${token}`;
 
+  // The DB keeps four columns; fold the optional extras into the stored reason
+  // so they carry through to the approved calendar event (no schema change).
+  const recordReason = [
+    reason,
+    company ? `Company: ${company}` : "",
+    notes ? `Notes: ${notes}` : "",
+  ]
+    .filter(Boolean)
+    .join(" — ");
+
   const sql = getDb();
   if (sql) {
     await sql`
       INSERT INTO pending_bookings (id, token, visitor_name, visitor_email, preferred_time, reason, status)
-      VALUES (${randomUUID()}, ${token}, ${name}, ${email}, ${preferredTime}, ${reason}, 'pending')
+      VALUES (${randomUUID()}, ${token}, ${name}, ${email}, ${preferredTime}, ${recordReason}, 'pending')
     `;
   }
 
@@ -40,6 +55,8 @@ export async function createBookingRequest({
     visitorEmail: email,
     preferredTime,
     reason,
+    company,
+    notes,
     approveUrl,
     declineUrl,
   });
