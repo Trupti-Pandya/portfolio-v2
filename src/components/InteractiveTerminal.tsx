@@ -53,7 +53,7 @@ const COMMANDS: Record<string, OutputLine[]> = {
   ],
   contact: [
     { type: "label", text: "contact.sh" },
-    { type: "link", text: "  email     truptipandya21901@gmail.com", href: "mailto:truptipandya21901@gmail.com" },
+    { type: "link", text: "  email     pandyatrupti531@gmail.com", href: "mailto:pandyatrupti531@gmail.com" },
     { type: "link", text: "  linkedin  linkedin.com/in/trupti-pandya", href: "https://linkedin.com/in/trupti-pandya" },
     { type: "link", text: "  github    github.com/Trupti-Pandya", href: "https://github.com/Trupti-Pandya" },
   ],

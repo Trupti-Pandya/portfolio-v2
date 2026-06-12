@@ -2,7 +2,7 @@
 
 ## How to Reach Trupti
 
-**Email:** truptipandya21901@gmail.com  
+**Email:** pandyatrupti531@gmail.com  
 **LinkedIn:** https://www.linkedin.com/in/trupti-pandya  
 **GitHub:** https://github.com/Trupti-Pandya  
 

@@ -199,7 +199,7 @@ export async function sendBookingDeclineToVisitor({
     <h1 style="margin:0 0 6px;font-family:${SANS};font-size:21px;font-weight:600;color:#ffffff;letter-spacing:-0.01em;">About your call request</h1>
     <p style="margin:0 0 16px;font-family:${SANS};font-size:15px;line-height:1.6;color:rgba(255,255,255,0.72);">Hi ${visitorName}, thank you for reaching out.</p>
     <p style="margin:0 0 24px;font-family:${SANS};font-size:15px;line-height:1.6;color:rgba(255,255,255,0.72);">Unfortunately Trupti isn&rsquo;t able to take a call at the requested time. You&rsquo;re very welcome to email her directly to find a slot that works for you both.</p>
-    ${button("mailto:truptipandya21901@gmail.com?subject=Hello%20Trupti", "Email Trupti")}
+    ${button("mailto:pandyatrupti531@gmail.com?subject=Hello%20Trupti", "Email Trupti")}
   `;
   await sendEmail({
     to: visitorEmail,

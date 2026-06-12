@@ -226,7 +226,7 @@ export default function ChatSection() {
           ...prev,
           {
             role: "ai",
-            text: "⚠ I wasn't able to submit that request to Trupti just now. Please email her directly at truptipandya21901@gmail.com and she'll get back to you.",
+            text: "⚠ I wasn't able to submit that request to Trupti just now. Please email her directly at pandyatrupti531@gmail.com and she'll get back to you.",
             provider,
           },
         ]);

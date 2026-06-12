@@ -725,7 +725,7 @@ export default function Home() {
           </div>
           <div className="contact-links">
             {[
-              ["email", "truptipandya21901@gmail.com", "mailto:truptipandya21901@gmail.com", "open ./email"],
+              ["email", "pandyatrupti531@gmail.com", "mailto:pandyatrupti531@gmail.com", "open ./email"],
               ["linkedin", "linkedin.com/in/trupti-pandya", "https://linkedin.com/in/trupti-pandya", "open ./linkedin"],
               ["github", "github.com/Trupti-Pandya", "https://github.com/Trupti-Pandya", "open ./github"],
             ].map(([k, v, h, cmd]) => (

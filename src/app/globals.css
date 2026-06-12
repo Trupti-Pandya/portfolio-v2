@@ -1629,21 +1629,28 @@ nav {
   font-size: 15px;
   color: var(--ink);
 }
-/* typing label on hover — muted so it stays legible beside the green mark */
+/* typing label on hover — muted so it stays legible beside the green mark.
+   Reveals via max-width so the box sizes to the text (no truncation of longer
+   commands like "open ./linkedin"); content stays on one line and isn't clipped. */
 .clink-cmd {
   display: inline-block;
   color: var(--muted);
   opacity: 0;
-  width: 0;
+  max-width: 0;
   overflow: hidden;
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: 0.18em;
   white-space: nowrap;
-  transition: width 0.35s ease, opacity 0.2s ease;
+  transition: max-width 0.35s ease, opacity 0.2s ease;
   vertical-align: middle;
 }
-.clink:hover .clink-cmd { opacity: 1; width: 90px }
+.clink:hover .clink-cmd { opacity: 1; max-width: 200px }
+/* On narrow screens hover commands add clutter and risk crowding the URL —
+   hide them so the full address always has room to show/wrap. */
+@media (max-width: 640px) {
+  .clink-cmd { display: none }
+}
 
 /* ── FOOTER ── */
 .footer {
