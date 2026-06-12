@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Chatbot Placement — 3 Options</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --lime: #b8ff57;
+    --lime-dim: rgba(184,255,87,0.55);
+    --lime-faint: rgba(184,255,87,0.12);
+    --lime-glow: rgba(184,255,87,0.25);
+    --bg: #060608;
+    --surface: #0d0d10;
+    --border: rgba(184,255,87,0.18);
+    --mono: 'Courier New', Courier, monospace;
+    --aws: #FF9900;
+    --azure: #0078D4;
+    --gcp: #4285F4;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--lime);
+    font-family: var(--mono);
+    padding: 40px 24px 80px;
+    min-height: 100vh;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: rgba(184,255,87,0.4);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .page-sub {
+    text-align: center;
+    font-size: 22px;
+    color: var(--lime);
+    margin-bottom: 60px;
+    letter-spacing: 0.05em;
+  }
+  .page-sub em { font-style: normal; color: rgba(184,255,87,0.5); }
+
+  /* ── OPTION LAYOUT ── */
+  .option {
+    margin-bottom: 80px;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .option-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .option-letter {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--lime);
+    background: var(--lime-faint);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    text-transform: uppercase;
+  }
+  .option-title { font-size: 18px; color: var(--lime); }
+  .option-desc { font-size: 12px; color: rgba(184,255,87,0.45); margin-left: auto; }
+
+  .option-pros {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .pro-tag {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--lime-dim);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+  }
+  .pro-tag.con { color: rgba(255,100,100,0.6); border-color: rgba(255,100,100,0.2); }
+
+  /* ── SHARED CHAT ELEMENTS ── */
+  .msg { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+  .msg-user { flex-direction: row-reverse; }
+  .msg-bubble {
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 8px 12px;
+    max-width: 75%;
+    border: 1px solid var(--border);
+  }
+  .msg-user .msg-bubble {
+    background: var(--lime-faint);
+    color: var(--lime);
+    border-color: rgba(184,255,87,0.3);
+  }
+  .msg-ai .msg-bubble {
+    background: rgba(255,255,255,0.02);
+    color: rgba(184,255,87,0.75);
+  }
+  .msg-avatar {
+    width: 24px; height: 24px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    flex-shrink: 0;
+    color: var(--lime-dim);
+  }
+  .provider-badge {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    padding: 1px 6px;
+    margin-bottom: 4px;
+    display: inline-block;
+    text-transform: uppercase;
+  }
+  .badge-azure { color: #60aaff; border: 1px solid rgba(96,170,255,0.3); background: rgba(0,120,212,0.1); }
+  .badge-aws   { color: #ffb84d; border: 1px solid rgba(255,153,0,0.3);  background: rgba(255,153,0,0.1); }
+  .badge-gcp   { color: #7aadff; border: 1px solid rgba(66,133,244,0.3); background: rgba(66,133,244,0.1); }
+
+  .blink { display: inline-block; animation: blink 1s step-end infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ════════════════════════════════════
+     OPTION A — TERMINAL INLINE
+  ════════════════════════════════════ */
+  .terminal-box {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    position: relative;
+  }
+  .terminal-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(184,255,87,0.03);
+  }
+  .terminal-dots { display: flex; gap: 5px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .terminal-id { font-size: 10px; color: rgba(184,255,87,0.3); letter-spacing: 0.15em; }
+  .terminal-status { font-size: 9px; color: rgba(184,255,87,0.4); letter-spacing: 0.1em; }
+
+  .terminal-body { padding: 16px 18px; min-height: 420px; }
+
+  .t-line { font-size: 13px; line-height: 1.9; }
+  .t-prompt { color: rgba(184,255,87,0.4); }
+  .t-cmd { color: var(--lime); }
+  .t-out { color: rgba(184,255,87,0.6); padding-left: 18px; border-left: 2px solid rgba(184,255,87,0.15); margin: 4px 0 10px; }
+  .t-label { color: var(--lime); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+
+  .provider-pills {
+    display: flex; gap: 8px; margin: 10px 0 14px; padding-left: 18px;
+  }
+  .pill {
+    font-size: 11px;
+    padding: 4px 14px;
+    border: 1px solid;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .pill-azure { border-color: rgba(0,120,212,0.5); color: #60aaff; }
+  .pill-azure.active { background: rgba(0,120,212,0.2); box-shadow: 0 0 10px rgba(0,120,212,0.3); }
+  .pill-aws   { border-color: rgba(255,153,0,0.5);  color: #ffb84d; }
+  .pill-gcp   { border-color: rgba(66,133,244,0.5); color: #7aadff; }
+
+  .t-chat { padding-left: 18px; border-left: 2px solid rgba(0,120,212,0.3); margin-bottom: 8px; }
+  .t-input-bar {
+    display: flex; align-items: center; gap: 8px;
+    border-top: 1px solid rgba(184,255,87,0.15);
+    padding: 10px 18px 0;
+  }
+  .t-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--lime); font-family: var(--mono); font-size: 13px; caret-color: var(--lime);
+  }
+  .t-input::placeholder { color: rgba(184,255,87,0.2); }
+
+  /* ════════════════════════════════════
+     OPTION B — FLOATING WIDGET
+  ════════════════════════════════════ */
+  .option-b-scene {
+    display: flex; gap: 24px; align-items: flex-end;
+  }
+  .page-preview {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    height: 460px;
+    position: relative;
+    overflow: hidden;
+    padding: 20px;
+  }
+  .page-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;
+  }
+  .page-nav-id { font-size: 11px; color: rgba(184,255,87,0.5); }
+  .page-nav-links { display: flex; gap: 16px; }
+  .page-nav-links span { font-size: 10px; color: rgba(184,255,87,0.3); letter-spacing: 0.1em; }
+  .page-hero-txt { font-size: 28px; line-height: 1.2; color: var(--lime); opacity: 0.15; }
+  .page-hero-txt em { font-style: italic; }
+
+  .float-fab {
+    position: absolute;
+    bottom: 20px; right: 20px;
+    width: 48px; height: 48px;
+    background: var(--lime);
+    border-radius: 0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(184,255,87,0.4), 0 0 40px rgba(184,255,87,0.15);
+  }
+  .float-fab svg { width: 20px; height: 20px; }
+
+  .chat-panel {
+    width: 340px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex; flex-direction: column;
+    height: 460px;
+    box-shadow: -8px 0 40px rgba(184,255,87,0.05);
+  }
+  .chat-panel-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(184,255,87,0.03);
+  }
+  .chat-panel-title {
+    font-size: 10px; letter-spacing: 0.2em; color: var(--lime-dim); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .provider-tabs {
+    display: flex; gap: 4px;
+  }
+  .tab {
+    flex: 1; padding: 5px 0; text-align: center;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    border: 1px solid transparent; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-azure { color: #60aaff; border-color: rgba(0,120,212,0.4); }
+  .tab-azure.active { background: rgba(0,120,212,0.15); border-color: #0078D4; }
+  .tab-aws { color: #ffb84d; border-color: rgba(255,153,0,0.4); }
+  .tab-gcp { color: #7aadff; border-color: rgba(66,133,244,0.4); }
+
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 14px;
+    scrollbar-width: none;
+  }
+  .model-tag {
+    font-size: 9px; color: rgba(96,170,255,0.6); letter-spacing: 0.1em;
+    margin-bottom: 12px; padding: 4px 8px;
+    border: 1px solid rgba(0,120,212,0.2);
+    display: inline-block;
+  }
+
+  .chat-input-wrap {
+    border-top: 1px solid var(--border); padding: 10px 12px;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .chat-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--lime); font-family: var(--mono); font-size: 11px;
+  }
+  .chat-input::placeholder { color: rgba(184,255,87,0.2); }
+  .send-btn {
+    width: 28px; height: 28px;
+    background: var(--lime-faint); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--lime); font-size: 12px;
+  }
+
+  /* ════════════════════════════════════
+     OPTION C — PAGE SECTION
+  ════════════════════════════════════ */
+  .section-mockup {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 32px 36px;
+  }
+  .sec-marker {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+  }
+  .sec-num { font-size: 11px; color: rgba(184,255,87,0.3); letter-spacing: 0.15em; }
+  .sec-line { flex: none; width: 40px; height: 1px; background: var(--border); }
+  .sec-label { font-size: 10px; letter-spacing: 0.2em; color: rgba(184,255,87,0.35); text-transform: uppercase; }
+
+  .section-heading { font-size: 28px; line-height: 1.2; margin-bottom: 28px; }
+  .section-heading em { font-style: italic; color: rgba(184,255,87,0.5); }
+
+  .provider-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
+  }
+  .provider-card {
+    border: 1px solid var(--border);
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .provider-card.selected-azure {
+    border-color: #0078D4;
+    background: rgba(0,120,212,0.08);
+    box-shadow: 0 0 20px rgba(0,120,212,0.15);
+  }
+  .provider-card.unselected { opacity: 0.4; }
+  .card-logo { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+  .logo-azure { color: #60aaff; }
+  .logo-aws   { color: #ffb84d; }
+  .logo-gcp   { color: #7aadff; }
+  .card-model { font-size: 13px; color: var(--lime); margin-bottom: 4px; }
+  .card-desc { font-size: 10px; color: rgba(184,255,87,0.4); line-height: 1.6; }
+  .card-cost { font-size: 9px; margin-top: 8px; padding: 2px 6px; display: inline-block; }
+  .cost-azure { color: #60aaff; border: 1px solid rgba(0,120,212,0.3); }
+  .cost-aws   { color: #ffb84d; border: 1px solid rgba(255,153,0,0.3); }
+  .cost-gcp   { color: #34a853; border: 1px solid rgba(52,168,83,0.3); }
+  .selected-check {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 9px; color: #60aaff; letter-spacing: 0.1em;
+  }
+
+  .section-chat {
+    border: 1px solid rgba(0,120,212,0.3);
+    background: rgba(0,120,212,0.04);
+  }
+  .section-chat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(0,120,212,0.2);
+  }
+  .section-chat-label { font-size: 9px; letter-spacing: 0.2em; color: #60aaff; text-transform: uppercase; }
+  .section-chat-model { font-size: 9px; color: rgba(96,170,255,0.5); }
+  .section-chat-body { padding: 16px; min-height: 160px; }
+  .section-chat-input {
+    display: flex; align-items: center; gap: 8px;
+    border-top: 1px solid rgba(0,120,212,0.2);
+    padding: 10px 16px;
+  }
+  .section-chat-prompt { font-size: 12px; color: rgba(96,170,255,0.5); flex-shrink: 0; }
+  .section-chat-field {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--lime); font-family: var(--mono); font-size: 12px;
+  }
+  .section-chat-field::placeholder { color: rgba(184,255,87,0.2); }
+
+  /* ── LEGEND ── */
+  .legend {
+    max-width: 960px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .legend-item {}
+  .legend-letter { font-size: 10px; letter-spacing: 0.2em; color: var(--lime-dim); margin-bottom: 6px; }
+  .legend-title { font-size: 13px; color: var(--lime); margin-bottom: 4px; }
+  .legend-text { font-size: 10px; color: rgba(184,255,87,0.4); line-height: 1.7; }
+
+  .verdict {
+    max-width: 960px;
+    margin: 24px auto 0;
+    background: var(--lime-faint);
+    border: 1px solid var(--border);
+    padding: 14px 20px;
+    font-size: 11px;
+    color: var(--lime-dim);
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+  .verdict strong { color: var(--lime); }
+</style>
+</head>
+<body>
+
+<p class="page-title">portfolio · ai chatbot placement</p>
+<p class="page-sub">3 Options — <em>pick your approach</em></p>
+
+<!-- ══════════════════════════════════════
+     OPTION A — INSIDE THE TERMINAL
+══════════════════════════════════════ -->
+<div class="option">
+  <div class="option-header">
+    <span class="option-letter">Option A</span>
+    <span class="option-title">Inside the Existing Terminal</span>
+    <span class="option-desc">type 'ask' → pick provider → chat inline</span>
+  </div>
+  <div class="option-pros">
+    <span class="pro-tag">✓ On-brand — no new UI</span>
+    <span class="pro-tag">✓ Feels native to the terminal</span>
+    <span class="pro-tag">✓ Minimal code change</span>
+    <span class="pro-tag con">✗ Limited space for chat</span>
+    <span class="pro-tag con">✗ Buried in hero, not always visible</span>
+  </div>
+
+  <div class="terminal-box">
+    <div class="terminal-titlebar">
+      <div class="terminal-dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <span class="terminal-id">trupti@portfolio:~$</span>
+      <span class="terminal-status">tokens: 2,847</span>
+    </div>
+    <div class="terminal-body">
+      <!-- previous commands -->
+      <div class="t-line"><span class="t-prompt">❯ </span><span class="t-cmd">help</span></div>
+      <div class="t-out">
+        <span class="t-label">available commands</span>
+        <div class="t-line" style="color:rgba(184,255,87,0.5)">  about · skills · projects · contact · whoami · <span style="color:var(--lime);text-shadow:0 0 8px var(--lime)">ask</span> · clear</div>
+      </div>
+
+      <!-- ask command -->
+      <div class="t-line" style="margin-top:8px"><span class="t-prompt">❯ </span><span class="t-cmd">ask</span></div>
+      <div class="t-out">
+        <span class="t-label">select ai provider</span>
+        <div class="provider-pills" style="padding-left:0">
+          <span class="pill pill-azure active">⬡ Azure</span>
+          <span class="pill pill-aws">⬡ AWS</span>
+          <span class="pill pill-gcp">⬡ GCP</span>
+        </div>
+        <div style="font-size:10px;color:rgba(96,170,255,0.5);margin-bottom:10px">
+          connected · gpt-4.1-mini · uk-south · <span style="color:#60aaff">azure openai</span>
+        </div>
+      </div>
+
+      <!-- chat exchange -->
+      <div class="t-chat">
+        <div class="t-line" style="margin-bottom:4px">
+          <span style="color:rgba(184,255,87,0.4)">you: </span>
+          <span style="color:var(--lime)">what are your strongest AI skills?</span>
+        </div>
+        <div class="t-line" style="margin-bottom:12px">
+          <span style="color:rgba(96,170,255,0.5)">gpt-4.1-mini: </span>
+          <span style="color:rgba(184,255,87,0.6)">Trupti specialises in RAG pipelines, prompt engineering, and LLM evaluation with DeepEval. She's built production-grade GenAI systems and has hands-on experience with LangChain, LlamaIndex, and hallucination detection. <span class="blink">_</span></span>
+        </div>
+      </div>
+
+      <div class="t-input-bar">
+        <span style="color:var(--lime);font-size:15px">❯</span>
+        <input class="t-input" placeholder="ask anything about Trupti..." />
+        <span style="font-size:10px;color:rgba(96,170,255,0.4)">azure · esc to exit</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     OPTION B — FLOATING WIDGET
+══════════════════════════════════════ -->
+<div class="option">
+  <div class="option-header">
+    <span class="option-letter">Option B</span>
+    <span class="option-title">Floating Chat Widget</span>
+    <span class="option-desc">fixed bottom-right · always accessible · provider tabs</span>
+  </div>
+  <div class="option-pros">
+    <span class="pro-tag">✓ Available on every scroll position</span>
+    <span class="pro-tag">✓ Familiar chat UI pattern</span>
+    <span class="pro-tag">✓ Doesn't disrupt page layout</span>
+    <span class="pro-tag con">✗ Feels less unique / more generic</span>
+    <span class="pro-tag con">✗ May clash with terminal aesthetic</span>
+  </div>
+
+  <div class="option-b-scene">
+    <!-- page behind -->
+    <div class="page-preview">
+      <div class="page-nav">
+        <span class="page-nav-id">sys/trupti_pandya.llm</span>
+        <div class="page-nav-links">
+          <span>about</span><span>skills</span><span>projects</span><span>contact</span>
+        </div>
+      </div>
+      <div class="page-hero-txt">
+        Trupti<br/><em>Pandya</em>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:rgba(184,255,87,0.08);line-height:2">
+        LLM Engineer &amp; Generative AI Specialist<br/>
+        MSc Cloud Computing · Leicester, UK
+      </div>
+
+      <!-- FAB button -->
+      <div class="float-fab" title="Chat with AI">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#060608" stroke-width="2.5">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- chat panel open -->
+    <div class="chat-panel">
+      <div class="chat-panel-header">
+        <div class="chat-panel-title">// ai assistant</div>
+        <div class="provider-tabs">
+          <div class="tab tab-azure active">Azure</div>
+          <div class="tab tab-aws">AWS</div>
+          <div class="tab tab-gcp">GCP</div>
+        </div>
+      </div>
+
+      <div class="chat-messages">
+        <div style="text-align:center;margin-bottom:14px">
+          <span class="model-tag">gpt-4.1-mini · azure openai · uk-south</span>
+        </div>
+
+        <div class="msg msg-ai">
+          <div class="msg-avatar">AI</div>
+          <div>
+            <div class="msg-bubble">
+              Hi! I'm Trupti's AI assistant running on Azure OpenAI. Ask me anything about her skills, projects, or experience.
+            </div>
+          </div>
+        </div>
+
+        <div class="msg msg-user">
+          <div class="msg-avatar">U</div>
+          <div>
+            <div class="msg-bubble">
+              Tell me about her RAG experience
+            </div>
+          </div>
+        </div>
+
+        <div class="msg msg-ai">
+          <div class="msg-avatar">AI</div>
+          <div>
+            <span class="provider-badge badge-azure">Azure OpenAI</span>
+            <div class="msg-bubble">
+              Trupti built a full RAG pipeline for HireAI — her MSc dissertation. It ingests CVs and job descriptions, generates semantic embeddings, and performs retrieval-augmented candidate matching with hallucination guardrails. <span class="blink">_</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-wrap">
+        <input class="chat-input" placeholder="ask about Trupti..." />
+        <div class="send-btn">→</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     OPTION C — PAGE SECTION
+══════════════════════════════════════ -->
+<div class="option">
+  <div class="option-header">
+    <span class="option-letter">Option C</span>
+    <span class="option-title">Dedicated Page Section</span>
+    <span class="option-desc">new section · provider cards · full chat interface</span>
+  </div>
+  <div class="option-pros">
+    <span class="pro-tag">✓ Maximum visual impact</span>
+    <span class="pro-tag">✓ Each provider gets proper showcase</span>
+    <span class="pro-tag">✓ Best for CV demo — most prominent</span>
+    <span class="pro-tag con">✗ Adds length to the page</span>
+    <span class="pro-tag con">✗ More layout work</span>
+  </div>
+
+  <div class="section-mockup">
+    <div class="sec-marker">
+      <div class="sec-num">06</div>
+      <div class="sec-line"></div>
+      <div class="sec-label">ai.playground</div>
+    </div>
+
+    <div class="section-heading">
+      Chat with<br/><em>my AI.</em>
+    </div>
+
+    <div style="font-size:11px;color:rgba(184,255,87,0.4);margin-bottom:20px;line-height:1.8">
+      This assistant runs on real hyperscaler AI infrastructure. Pick a provider — each routes to a different LLM.
+    </div>
+
+    <!-- Provider cards -->
+    <div class="provider-cards">
+      <div class="provider-card selected-azure">
+        <span class="selected-check">✓ selected</span>
+        <div class="card-logo logo-azure">⬡ Microsoft Azure</div>
+        <div class="card-model">gpt-4.1-mini</div>
+        <div class="card-desc">Azure OpenAI Service · UK South region · GDPR-aligned data residency</div>
+        <span class="card-cost cost-azure">~£0.05/mo</span>
+      </div>
+      <div class="provider-card unselected">
+        <div class="card-logo logo-aws">⬡ Amazon AWS</div>
+        <div class="card-model">Nova Micro</div>
+        <div class="card-desc">AWS Bedrock · Europe (London) · Serverless foundation model</div>
+        <span class="card-cost cost-aws">~£0.02/mo</span>
+      </div>
+      <div class="provider-card unselected">
+        <div class="card-logo logo-gcp">⬡ Google Cloud</div>
+        <div class="card-model">Gemini 1.5 Flash</div>
+        <div class="card-desc">Vertex AI · Free tier · 1M tokens/day included</div>
+        <span class="card-cost cost-gcp">Free</span>
+      </div>
+    </div>
+
+    <!-- Active chat -->
+    <div class="section-chat">
+      <div class="section-chat-header">
+        <span class="section-chat-label">// azure openai · active session</span>
+        <span class="section-chat-model">gpt-4.1-mini · uk-south</span>
+      </div>
+      <div class="section-chat-body">
+        <div class="msg msg-ai" style="margin-bottom:10px">
+          <div class="msg-avatar" style="font-size:8px;border-color:rgba(0,120,212,0.4)">Az</div>
+          <div>
+            <span class="provider-badge badge-azure">gpt-4.1-mini</span>
+            <div class="msg-bubble" style="border-color:rgba(0,120,212,0.2)">
+              Hello! I'm powered by Azure OpenAI running in UK South. Ask me anything about Trupti's background, projects, or skills.
+            </div>
+          </div>
+        </div>
+        <div class="msg msg-user">
+          <div class="msg-avatar">U</div>
+          <div>
+            <div class="msg-bubble">Is she available for hire?</div>
+          </div>
+        </div>
+        <div class="msg msg-ai">
+          <div class="msg-avatar" style="font-size:8px;border-color:rgba(0,120,212,0.4)">Az</div>
+          <div>
+            <span class="provider-badge badge-azure">gpt-4.1-mini</span>
+            <div class="msg-bubble" style="border-color:rgba(0,120,212,0.2)">
+              Yes! Trupti is actively seeking AI/ML Engineering roles in the UK — open to remote and hybrid. She's based in Leicester with full right to work. <span class="blink">_</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-chat-input">
+        <span class="section-chat-prompt">❯</span>
+        <input class="section-chat-field" placeholder="ask anything about Trupti..." />
+        <span style="font-size:10px;color:rgba(0,120,212,0.4)">enter ↵</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     LEGEND + RECOMMENDATION
+══════════════════════════════════════ -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-letter">OPTION A</div>
+    <div class="legend-title">Terminal — Inline</div>
+    <div class="legend-text">Extends your existing terminal with an <code>ask</code> command. Most on-brand. Least disruptive. But chat is cramped and hidden in the hero.</div>
+  </div>
+  <div class="legend-item">
+    <div class="legend-letter">OPTION B</div>
+    <div class="legend-title">Floating Widget</div>
+    <div class="legend-text">Always accessible via a corner FAB. Familiar UX but feels generic. Works well but doesn't match the terminal-native identity of the site.</div>
+  </div>
+  <div class="legend-item">
+    <div class="legend-letter">OPTION C</div>
+    <div class="legend-title">Page Section ← Recommended</div>
+    <div class="legend-text">Dedicated section that showcases all three hyperscalers visually. Maximum CV impact. Each provider card shows the model, region, and cost — an interviewer can see the architecture at a glance.</div>
+  </div>
+</div>
+
+<div class="verdict">
+  <strong>Recommendation:</strong> Option C gives the highest resume signal — it's impossible to miss, showcases all three providers with real labels (gpt-4.1-mini · UK South, Nova Micro · London, Gemini Flash · Free), and reads like an architecture diagram to a hiring manager. If you want to ship fastest, Option B is a day's work. Option A is the most elegant but hardest to demo.
+</div>
+
+</body>
+</html>
