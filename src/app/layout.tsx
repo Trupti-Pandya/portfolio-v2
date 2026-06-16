@@ -60,14 +60,14 @@ export const metadata: Metadata = {
     // Cover every browser: .ico (Safari, which ignores SVG and auto-requests
     // /favicon.ico), crisp SVG (Chrome/Firefox), and explicit small PNGs.
     icon: [
-      { url: "/favicon.ico?v=3", sizes: "any" },
-      { url: "/icon.svg?v=3", type: "image/svg+xml" },
-      { url: "/icon-32.png?v=3", type: "image/png", sizes: "32x32" },
-      { url: "/icon-16.png?v=3", type: "image/png", sizes: "16x16" },
-      { url: "/icon-192.png?v=3", type: "image/png", sizes: "192x192" },
+      { url: "/favicon.ico?v=4", sizes: "any" },
+      { url: "/icon.svg?v=4", type: "image/svg+xml" },
+      { url: "/icon-32.png?v=4", type: "image/png", sizes: "32x32" },
+      { url: "/icon-16.png?v=4", type: "image/png", sizes: "16x16" },
+      { url: "/icon-192.png?v=4", type: "image/png", sizes: "192x192" },
     ],
-    apple: [{ url: "/apple-icon.png?v=3", sizes: "180x180" }],
-    shortcut: [{ url: "/favicon.ico?v=3" }],
+    apple: [{ url: "/apple-icon.png?v=4", sizes: "180x180" }],
+    shortcut: [{ url: "/favicon.ico?v=4" }],
   },
 };
 

@@ -30,10 +30,15 @@ export default function OpengraphImage() {
           position: "relative",
         }}
       >
-        {/* top: terminal label */}
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: MUTED }}>
+        {/* top: terminal label + window dots (drawn, not glyphs — keeps the
+            ImageResponse default font from choking on ● and rendering tofu) */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 24, color: MUTED }}>
           <span>sys/trupti_pandya.llm</span>
-          <span style={{ color: ACCENT }}>● ● ●</span>
+          <div style={{ display: "flex", gap: 12 }}>
+            {[0, 1, 2].map((i) => (
+              <div key={i} style={{ width: 18, height: 18, borderRadius: 18, background: ACCENT, opacity: 0.4 + i * 0.3 }} />
+            ))}
+          </div>
         </div>
 
         {/* center: prompt + name */}
