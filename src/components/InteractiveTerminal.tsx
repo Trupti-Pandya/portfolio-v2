@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, ReactNode } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AsciiArt } from "@/components/ui/ascii-art";
 
 const HI_THERE = `  _    _ _   _______ _                   _ _

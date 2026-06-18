@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import ChatWidget from "../components/ChatWidget";
 
@@ -177,7 +177,11 @@ export default function Home() {
 
   /* ── nav underline slider ── */
   useEffect(() => {
+    // Measures live DOM rects to position the nav underline — a legitimate
+    // "sync with an external system" effect, so the synchronous setState is
+    // intended here (not the cascading-render pattern the rule guards against).
     if (!navLinksRef.current || !activeSection) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNavUnderline((u) => ({ ...u, show: false }));
       return;
     }
@@ -402,7 +406,7 @@ export default function Home() {
         </motion.div>
       </div>
 
-      <div className="divider"><span className="divider-tag">//</span></div>
+      <div className="divider"><span className="divider-tag">{"//"}</span></div>
 
       {/* ── ABOUT ── */}
       <div className="section reveal" id="about">
@@ -438,7 +442,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="divider"><span className="divider-tag">//</span></div>
+      <div className="divider"><span className="divider-tag">{"//"}</span></div>
 
       {/* ── SKILLS ── */}
       <div className="section reveal" id="skills">
@@ -494,7 +498,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="divider"><span className="divider-tag">//</span></div>
+      <div className="divider"><span className="divider-tag">{"//"}</span></div>
 
       {/* ── PROJECTS ── */}
       <div className="section reveal" id="projects">
@@ -576,7 +580,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="divider"><span className="divider-tag">//</span></div>
+      <div className="divider"><span className="divider-tag">{"//"}</span></div>
 
       {/* ── EXPERIENCE ── */}
       <div className="section reveal" id="exp">
@@ -631,7 +635,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="divider" style={{ margin: "32px 0" }}><span className="divider-tag">//</span></div>
+        <div className="divider" style={{ margin: "32px 0" }}><span className="divider-tag">{"//"}</span></div>
 
         <div className="exp-wrap">
           <div className="exp-left">
@@ -662,7 +666,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="divider"><span className="divider-tag">//</span></div>
+      <div className="divider"><span className="divider-tag">{"//"}</span></div>
 
       {/* ── EDUCATION ── */}
       <div className="section reveal" id="edu">
@@ -704,7 +708,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="divider"><span className="divider-tag">//</span></div>
+      <div className="divider"><span className="divider-tag">{"//"}</span></div>
 
       {/* ── CONTACT ── */}
       <div className="section reveal" id="contact">
@@ -751,7 +755,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="divider"><span className="divider-tag">//</span></div>
+      <div className="divider"><span className="divider-tag">{"//"}</span></div>
 
       {/* ── FOOTER ── */}
       <div className="footer">

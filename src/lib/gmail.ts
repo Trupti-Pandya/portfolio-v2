@@ -10,7 +10,8 @@ function toBase64Url(str: string) {
 
 // RFC 2047 encoded-word so non-ASCII (emoji, accents) render correctly in the
 // Subject header instead of becoming mojibake like "Ã¢ÂœÂ…".
-function encodeHeader(value: string) {
+// Exported for unit testing (regression guard on the mojibake fix).
+export function encodeHeader(value: string) {
   // Pure ASCII needs no encoding.
   if (/^[\x00-\x7F]*$/.test(value)) return value;
   return `=?UTF-8?B?${Buffer.from(value, "utf-8").toString("base64")}?=`;

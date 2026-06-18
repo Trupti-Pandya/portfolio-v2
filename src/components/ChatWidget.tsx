@@ -488,7 +488,7 @@ export default function ChatWidget() {
             <div style={{ display: "flex", alignItems: "center", gap: "7px", minWidth: 0 }}>
               <span style={{ width: 5, height: 5, borderRadius: "50%", background: ACCENT, boxShadow: `0 0 4px ${ACCENT}`, display: "inline-block", animation: "chatPulse 2s ease-in-out infinite", flexShrink: 0 }} />
               <span style={{ fontFamily: "var(--mono)", fontSize: "9px", color: `rgba(${ACCENT_RGB},0.4)`, letterSpacing: "0.12em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                // pa.assistant · {cfg.model} · {cfg.label}
+                {"// "}pa.assistant · {cfg.model} · {cfg.label}
               </span>
               <span style={{
                 fontFamily: "var(--mono)", fontSize: "7px", padding: "1px 4px",
@@ -587,7 +587,7 @@ export default function ChatWidget() {
                   padding: "7px 11px", borderBottom: `1px solid rgba(${ACCENT_RGB},0.1)`,
                   fontFamily: "var(--mono)", fontSize: "8px",
                   letterSpacing: "0.2em", color: `rgba(${ACCENT_RGB},0.3)`, textTransform: "uppercase",
-                }}>// select model</div>
+                }}>{"// select model"}</div>
                 {(Object.entries(PROVIDERS) as [Provider, ProviderConfig][]).map(([key, p]) => (
                   <div key={key} onClick={() => { setProvider(key); setPickerOpen(false); inputRef.current?.focus(); }}
                     style={{

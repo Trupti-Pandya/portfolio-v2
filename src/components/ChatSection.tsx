@@ -307,7 +307,7 @@ export default function ChatSection() {
           flexShrink: 0,
         }}>
           <span style={{ fontFamily: "var(--mono)", fontSize: "10px", color: "rgba(184,255,87,0.3)", letterSpacing: "0.15em" }}>
-            // ai.assistant · multi-provider
+            {"// ai.assistant · multi-provider"}
           </span>
           <span style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "var(--mono)", fontSize: "9px", color: "rgba(184,255,87,0.3)" }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#28c840", boxShadow: "0 0 4px #28c840", display: "inline-block", animation: "chatPulse 2s ease-in-out infinite" }} />
@@ -432,7 +432,7 @@ export default function ChatSection() {
                 letterSpacing: "0.2em", color: "rgba(184,255,87,0.3)",
                 textTransform: "uppercase",
               }}>
-                // select model + persona
+                {"// select model + persona"}
               </div>
               {(Object.entries(PROVIDERS) as [Provider, ProviderConfig][]).map(([key, p]) => (
                 <div
