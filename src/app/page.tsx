@@ -705,12 +705,12 @@ export default function Home() {
         </div>
         <div className="certs">
           <div className="certs-label">✓ Certifications</div>
-          <div className="certs-grid">
+          <div className="certs-wall">
             {[
               {
                 img: "/e025dc93-9e1f-45dd-9793-92ee174175db.png",
                 name: "Generative AI Fundamentals",
-                issuer: "Databricks Academy",
+                issuer: "Databricks",
                 verifyUrl: "https://credentials.databricks.com/9be6b0e2-0f56-4357-b9e9-4674eaf44bdc",
               },
               {
@@ -719,34 +719,27 @@ export default function Home() {
                 issuer: "Microsoft",
                 verifyUrl: "https://www.credly.com/badges/05480688-6840-4753-8108-79cb62144901/public_url",
               },
-            ].map((c) => {
-              const inner = (
-                <>
-                  <Image
-                    src={c.img}
-                    alt={`${c.name} — ${c.issuer} badge`}
-                    width={80}
-                    height={80}
-                    className="cert-img"
-                  />
-                  <div className="cert-info">
-                    <div className="cert-name">{c.name}</div>
-                    <div className="cert-issuer">{c.issuer}</div>
-                    {c.verifyUrl && <span className="cert-verify">Verify ↗</span>}
-                  </div>
-                </>
-              );
-              return c.verifyUrl ? (
-                <a key={c.name} href={c.verifyUrl} target="_blank" rel="noopener noreferrer" className="cert-card">
-                  {inner}
-                </a>
-              ) : (
-                <div key={c.name} className="cert-card">
-                  {inner}
+            ].map((c) => (
+              <a
+                key={c.name}
+                href={c.verifyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cert-tile"
+                aria-label={`${c.name} — verify credential on ${c.issuer}`}
+              >
+                <div className="cert-tile-art">
+                  <Image src={c.img} alt={`${c.name} — ${c.issuer} badge`} width={104} height={104} className="cert-img" />
                 </div>
-              );
-            })}
+                <div className="cert-tile-info">
+                  <div className="cert-tile-name">{c.name}</div>
+                  <div className="cert-tile-issuer">{c.issuer}</div>
+                  <span className="cert-tile-verify">Verify ↗</span>
+                </div>
+              </a>
+            ))}
           </div>
+          <div className="certs-more">▸ more credentials in progress<span className="certs-cursor">_</span></div>
         </div>
       </div>
 
