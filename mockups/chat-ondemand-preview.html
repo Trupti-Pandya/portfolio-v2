@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>On-Demand Chatbot — Interaction Preview</title>
+<style>
+  :root{
+    --green:#c3f260; --green-rgb:195,242,96;
+    --mono:"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --paper:#0a0a0d; --bg:#060608; --grey:rgba(255,255,255,0.12);
+    --mid:#777; --ink:#e8e8e8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);
+    background-image:radial-gradient(circle,rgba(255,255,255,0.022) 1px,transparent 1px);
+    background-size:26px 26px;min-height:100vh;}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;gap:8px;align-items:center;
+    padding:10px 18px;background:rgba(6,6,8,0.7);backdrop-filter:blur(6px);border-bottom:1px solid var(--grey);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;}
+  .topbar .t{color:var(--green);margin-right:14px}
+  .seg{display:flex;border:1px solid rgba(var(--green-rgb),0.3);border-radius:3px;overflow:hidden}
+  .seg button{background:transparent;border:none;color:rgba(var(--green-rgb),0.6);font-family:var(--mono);
+    font-size:10px;letter-spacing:0.12em;padding:5px 12px;cursor:pointer;text-transform:uppercase}
+  .seg button.on{background:rgba(var(--green-rgb),0.16);color:var(--green)}
+  .hint-line{margin-left:auto;color:var(--mid);text-transform:none;letter-spacing:0.05em;font-size:10px}
+
+  /* ---------- hero ---------- */
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:100vh;padding-top:44px}
+  @media(max-width:860px){.hero{grid-template-columns:1fr}}
+  .hero-left{padding:56px 24px 56px 40px;display:flex;flex-direction:column;justify-content:center;position:relative}
+  .prompt-line{font-size:13px;color:var(--green);margin-bottom:26px}
+  .hero-name{font-family:Georgia,"Times New Roman",serif;line-height:0.92;margin:0 0 18px}
+  .hero-name .l1{display:block;font-size:84px;color:#ece9e2;font-weight:700}
+  .hero-name .l2{display:block;font-size:84px;color:var(--green);font-style:italic;font-weight:700}
+  .hero-title{font-size:12px;letter-spacing:0.04em;line-height:1.9;color:#cfcfcf;text-transform:uppercase;margin-bottom:30px}
+  .hero-stats{display:flex;gap:30px;margin-bottom:30px}
+  .hstat-num{font-size:34px;color:var(--green);font-weight:700;font-family:Georgia,serif}
+  .hstat-lbl{font-size:10px;color:var(--mid);text-transform:uppercase;letter-spacing:0.08em;line-height:1.4;margin-top:4px}
+  .cta{display:flex;gap:12px}
+  .btn{font-size:12px;padding:12px 18px;text-decoration:none;letter-spacing:0.05em}
+  .btn-lime{background:var(--green);color:#060608;font-weight:600}
+  .btn-ghost{border:1px solid rgba(var(--green-rgb),0.4);color:var(--green)}
+
+  .hero-right{padding:56px 40px 56px 24px;display:flex;flex-direction:column;position:relative}
+
+  /* terminal panel — the ASCII art section (UNCHANGED) */
+  .panel{background:var(--paper);border:1px solid var(--grey);position:relative;flex:1;display:flex;flex-direction:column;min-height:440px;overflow:hidden;
+    box-shadow:0 0 0 1px rgba(var(--green-rgb),0.08) inset;}
+  .portrait{position:absolute;right:-2%;top:8%;bottom:14%;width:48%;color:var(--green);font-size:5px;line-height:5px;
+    white-space:pre;overflow:hidden;opacity:0.5;pointer-events:none;user-select:none;
+    -webkit-mask-image:radial-gradient(ellipse at 58% 45%,#000 38%,transparent 72%);mask-image:radial-gradient(ellipse at 58% 45%,#000 38%,transparent 72%);}
+  .crosshair{position:absolute;right:16%;bottom:24%;font-size:8px;color:var(--green);opacity:0.5;border:1px solid currentColor;padding:2px 6px;letter-spacing:0.1em}
+  .pfg{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:18px}
+  pre.figlet{margin:0;font-size:8px;line-height:1.45;color:var(--green);text-shadow:0 0 14px var(--green),0 0 30px rgba(var(--green-rgb),0.3)}
+  .hint{margin-top:12px;font-size:12px;line-height:1.9;border-left:1px solid rgba(var(--green-rgb),0.3);padding-left:10px;color:rgba(var(--green-rgb),0.55)}
+  .hint b{color:var(--green);font-weight:400;text-shadow:0 0 6px var(--green)}
+  .hint .dim{opacity:0.5}
+
+  /* the NEW dedicated trigger — replaces the old in-place input bar (same footprint/look) */
+  .launcher{margin-top:auto;border-top:1px solid rgba(var(--green-rgb),0.14);background:rgba(6,6,8,0.92);
+    display:flex;align-items:center;justify-content:space-between;padding:14px 14px;cursor:pointer;transition:background .15s}
+  .launcher:hover{background:rgba(var(--green-rgb),0.06)}
+  .launcher .lead{display:flex;align-items:center;gap:9px;font-size:13px;color:rgba(var(--green-rgb),0.65)}
+  .launcher .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
+  .launcher .cta-mini{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--green);border:1px solid rgba(var(--green-rgb),0.4);padding:6px 11px;letter-spacing:0.05em}
+  .meta{display:flex;justify-content:space-between;font-size:10px;color:var(--mid);letter-spacing:0.2em;text-transform:uppercase;margin-top:8px}
+
+  /* floating action button (only in 'floating' mode) */
+  .fab{position:fixed;right:26px;bottom:26px;z-index:40;display:none;align-items:center;gap:9px;
+    background:var(--green);color:#060608;font-family:var(--mono);font-weight:600;font-size:13px;
+    border:none;padding:14px 18px;border-radius:40px;cursor:pointer;box-shadow:0 8px 30px rgba(var(--green-rgb),0.35)}
+  body.mode-floating .fab{display:flex}
+  body.mode-floating .launcher{cursor:default}
+  body.mode-floating .launcher:hover{background:rgba(6,6,8,0.92)}
+
+  /* ---------- chatbot overlay (shared shell, positioned per-mode) ---------- */
+  .scrim{position:fixed;inset:0;z-index:60;background:rgba(6,6,8,0.55);backdrop-filter:blur(5px);
+    opacity:0;pointer-events:none;transition:opacity .3s}
+  body.open .scrim{opacity:1;pointer-events:auto}
+
+  .chatbot{position:fixed;z-index:61;background:#0a0a0d;border:1px solid rgba(var(--green-rgb),0.25);
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.7);
+    transition:opacity .32s ease, transform .32s ease;opacity:0;pointer-events:none}
+  body.open .chatbot{opacity:1;pointer-events:auto}
+
+  /* modal */
+  body.mode-modal .chatbot{top:50%;left:50%;width:min(560px,92vw);height:min(620px,86vh);
+    transform:translate(-50%,-46%) scale(0.98)}
+  body.mode-modal.open .chatbot{transform:translate(-50%,-50%) scale(1)}
+  /* slide-out drawer (right) */
+  body.mode-slideout .chatbot{top:0;right:0;height:100vh;width:min(460px,94vw);border-right:none;transform:translateX(40px)}
+  body.mode-slideout.open .chatbot{transform:translateX(0)}
+  /* floating window */
+  body.mode-floating .chatbot{right:26px;bottom:26px;width:min(420px,92vw);height:min(600px,80vh);transform:translateY(20px) scale(0.98)}
+  body.mode-floating.open .chatbot{transform:translateY(0) scale(1)}
+
+  .cb-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid rgba(var(--green-rgb),0.12);flex-shrink:0}
+  .cb-head .l{display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:0.15em;color:rgba(var(--green-rgb),0.45);text-transform:uppercase}
+  .cb-head .l .d{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
+  .x{width:26px;height:26px;border:1px solid rgba(var(--green-rgb),0.25);background:transparent;color:var(--green);
+    font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .x:hover{background:rgba(var(--green-rgb),0.1)}
+  .cb-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;gap:7px;align-items:flex-start}.row.user{flex-direction:row-reverse}
+  .av{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;border:1px solid rgba(var(--green-rgb),0.2);color:rgba(var(--green-rgb),0.5)}
+  .bub{max-width:80%;font-size:12.5px;line-height:1.6;padding:7px 11px;border:1px solid}
+  .bub.ai{border-color:rgba(var(--green-rgb),0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.92)}
+  .bub.user{border-color:rgba(var(--green-rgb),0.25);background:rgba(var(--green-rgb),0.08);color:var(--green)}
+  .badge{display:inline-block;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;padding:1px 5px;margin-bottom:4px;border:1px solid rgba(var(--green-rgb),0.45);color:var(--green);background:rgba(var(--green-rgb),0.12)}
+  .cb-input{border-top:1px solid rgba(var(--green-rgb),0.18);background:rgba(6,6,8,0.92);padding:10px 12px 9px;flex-shrink:0}
+  .cb-input .ph{font-size:13px;color:rgba(var(--green-rgb),0.35)}
+  .cb-chiprow{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:10px;border:1px solid rgba(var(--green-rgb),0.15);color:rgba(var(--green-rgb),0.6)}
+  .chip .model{color:#fff}.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green)}
+  .send{width:26px;height:26px;background:var(--green);display:flex;align-items:center;justify-content:center}
+  .note{position:fixed;left:18px;bottom:14px;font-size:10px;color:var(--mid);z-index:70}
+</style>
+</head>
+<body class="mode-modal">
+
+  <div class="topbar">
+    <span class="t">PREVIEW</span>
+    <span style="color:#999;text-transform:none;letter-spacing:0.05em;font-size:10px;margin-right:10px">Open style:</span>
+    <div class="seg" id="seg">
+      <button data-mode="modal" class="on">Modal</button>
+      <button data-mode="slideout">Slide-out</button>
+      <button data-mode="floating">Floating</button>
+    </div>
+    <span class="hint-line">Click the “Chat with AI” launcher (or press <b style="color:var(--green)">/</b>) to open · X or Esc to close</span>
+  </div>
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="prompt-line">$ initialising portfolio.exe ▮</div>
+      <h1 class="hero-name"><span class="l1">Trupti</span><span class="l2">Pandya</span></h1>
+      <div class="hero-title">LLM Engineer &amp; Generative AI Specialist<br>Junior AI Engineer @ Zenithive · MSc Cloud Computing · Leicester, UK</div>
+      <div class="hero-stats">
+        <div><div class="hstat-num">04</div><div class="hstat-lbl">shipped<br>RAG products</div></div>
+        <div><div class="hstat-num">06</div><div class="hstat-lbl">stack<br>domains</div></div>
+        <div><div class="hstat-num">∞</div><div class="hstat-lbl">eval<br>loops run</div></div>
+      </div>
+      <div class="cta"><a class="btn btn-lime">run --projects ›</a><a class="btn btn-ghost">./contact.sh</a></div>
+    </div>
+
+    <div class="hero-right">
+      <!-- ===== ASCII ART SECTION — UNCHANGED ===== -->
+      <div class="panel">
+        <div class="portrait">@@@%%%###***+++===---:::...   ..::--==++**##%%@@@
+%%%###***+++===---:::...   .::--==++**##%%@@@@@
+###***++===---:::...      .:--==++**##%%@@@@@@@
+**++==---:::...        ..:--==++**##%%@@@@@@@@@
+++==--:::..          .:--==++**##%%@@@@@@@@@@@@
+==--::..           .:-==++**##%%@@@@@@@@@@@@@@@
+--::.            .:-==++**##%%@@@@@@@@@@@@@@@@@
+:..            .:-=++**##%%%@@@@@@@@@@@@@@@@@@@</div>
+        <span class="crosshair">X:1169 Y:0583</span>
+        <div class="pfg">
+          <pre class="figlet"> _    _ _   _   _                   _ _
+| |  | (_) | | | |                 | | |
+| |__| |_  | |_| |__   ___ _ __ ___| | |
+|  __  | | | __| '_ \ / _ \ '__/ _ \ | |
+| |  | | | | |_| | | |  __/ | |  __/_|_|
+|_|  |_|_|  \__|_| |_|\___|_|  \___(_|_)</pre>
+          <div class="hint">ask my PA anything · or <b>book a call</b><br><span class="dim">switch models below to change tone</span></div>
+        </div>
+        <!-- NEW dedicated trigger (same footprint as the old input bar) -->
+        <div class="launcher" id="launcher">
+          <span class="lead"><span class="dot"></span>ask about Trupti, or say 'book a call'…</span>
+          <span class="cta-mini">▸ Chat with AI</span>
+        </div>
+      </div>
+      <div class="meta"><span>PRESS / TO OPEN</span><span>MULTI-CLOUD AI</span></div>
+    </div>
+  </div>
+
+  <!-- floating action button (floating mode only) -->
+  <button class="fab" id="fab">◆ Chat with AI</button>
+
+  <!-- ===== CHATBOT OVERLAY ===== -->
+  <div class="scrim" id="scrim"></div>
+  <div class="chatbot" role="dialog" aria-label="Chat with Trupti's AI assistant">
+    <div class="cb-head">
+      <span class="l"><span class="d"></span>// pa.assistant · gpt-4.1-mini · Azure OpenAI</span>
+      <button class="x" id="closeBtn" aria-label="Close chat">✕</button>
+    </div>
+    <div class="cb-body">
+      <div class="row"><div class="av">AI</div><div><div class="badge">azure openai · pro</div><div class="bub ai">Hi — I'm Trupti's PA. Ask me anything about her background, or say "book a call" and I'll arrange it.</div></div></div>
+      <div class="row user"><div class="av">U</div><div class="bub user">what's her strongest project?</div></div>
+      <div class="row"><div class="av">AI</div><div><div class="badge">azure openai · pro</div><div class="bub ai">Her standout is HireAI — a RAG-powered recruitment assistant built for her MSc dissertation. Want me to set up a call to discuss it?</div></div></div>
+    </div>
+    <div class="cb-input">
+      <div class="ph">ask about Trupti, or say 'book a call'...</div>
+      <div class="cb-chiprow">
+        <span class="chip"><span class="dot"></span><span class="model">gpt-4.1-mini</span> · Pro ⌃</span>
+        <span class="send"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#060608" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">This is a static interaction mockup — the real build reuses your existing ChatWidget (live models, booking, memory) unchanged inside the overlay.</div>
+
+<script>
+  const body=document.body;
+  const open =()=>body.classList.add('open');
+  const close=()=>body.classList.remove('open');
+  document.getElementById('launcher').addEventListener('click',()=>{ if(!body.classList.contains('mode-floating')) open(); });
+  document.getElementById('fab').addEventListener('click',open);
+  document.getElementById('closeBtn').addEventListener('click',close);
+  document.getElementById('scrim').addEventListener('click',close);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='/' && !body.classList.contains('open')){e.preventDefault();open();}
+    if(e.key==='Escape')close();
+  });
+  document.getElementById('seg').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    body.className='mode-'+b.dataset.mode;
+    [...document.querySelectorAll('#seg button')].forEach(x=>x.classList.toggle('on',x===b));
+  });
+</script>
+</body>
+</html>

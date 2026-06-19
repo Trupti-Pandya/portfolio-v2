@@ -1,38 +1,137 @@
 "use client";
 
-import { useState, useRef, useEffect, ReactNode } from "react";
+import { useState, useRef, useEffect } from "react";
+import { AsciiArt } from "@/components/ui/ascii-art";
+
+const HI_THERE = `  _    _ _   _______ _                   _ _
+ | |  | (_) |__   __| |                 | | |
+ | |__| |_     | |  | |__   ___ _ __ ___| | |
+ |  __  | |    | |  | '_ \\ / _ \\ '__/ _ \\ | |
+ | |  | | |    | |  | | | |  __/ | |  __/_|_|
+ |_|  |_|_|    |_|  |_| |_|\\___|_|  \\___(_|_)`;
+
+type OutputLine = { type: "label" | "value" | "error" | "link"; text: string; href?: string };
 
 type HistoryItem = {
   command: string;
-  output: ReactNode;
+  lines: OutputLine[];
 };
 
-const defaultOutput = (
-  <>
-    <div className="t-line"><span className="t-key">name</span><span className="t-val">&quot;Trupti Pandya&quot;</span></div>
-    <div className="t-line"><span className="t-key">role</span><span className="t-val">&quot;LLM Engineer&quot;</span></div>
-    <div className="t-line"><span className="t-key">location</span><span className="t-val">&quot;Leicester, UK&quot;</span></div>
-    <div className="t-spacer"></div>
-    <div className="t-line"><span className="t-key">expertise</span><span className="t-val">[</span></div>
-    <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>0</span><span className="t-val">&quot;RAG Architectures&quot;</span></div>
-    <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>1</span><span className="t-val">&quot;Prompt Engineering&quot;</span></div>
-    <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>2</span><span className="t-val">&quot;LLM Evaluation&quot;</span></div>
-    <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>3</span><span className="t-val">&quot;Responsible AI&quot;</span></div>
-    <div className="t-line"><span className="t-key"></span><span className="t-val">]</span></div>
-    <div className="t-spacer"></div>
-    <div className="t-line"><span className="t-key">status</span><span className="t-val" style={{ color: "var(--lime)" }}>&quot;open_to_offers&quot;</span></div>
-    <div className="t-line"><span className="t-key">cert</span><span className="t-val">&quot;Databricks GenAI&quot;</span></div>
-  </>
-);
+const COMMANDS: Record<string, OutputLine[]> = {
+  help: [
+    { type: "label", text: "available commands" },
+    { type: "value", text: "  about      →  who I am" },
+    { type: "value", text: "  skills     →  technical expertise" },
+    { type: "value", text: "  projects   →  selected work" },
+    { type: "value", text: "  contact    →  get in touch" },
+    { type: "value", text: "  whoami     →  current user" },
+    { type: "value", text: "  clear      →  clear terminal" },
+  ],
+  about: [
+    { type: "label", text: "about.md" },
+    { type: "value", text: "MSc Cloud Computing · University of Leicester · Merit" },
+    { type: "value", text: "Building production-grade GenAI systems that sit at the" },
+    { type: "value", text: "intersection of rigorous engineering and intuitive design." },
+  ],
+  skills: [
+    { type: "label", text: "capabilities.json" },
+    { type: "value", text: "  [LLM]      Prompt Engineering · RAG · LangChain" },
+    { type: "value", text: "  [EVAL]     DeepEval · Langfuse · Hallucination Detection" },
+    { type: "value", text: "  [CODE]     Python · TypeScript · React · Next.js" },
+    { type: "value", text: "  [CLOUD]    Azure · AWS · Docker · CI/CD" },
+    { type: "value", text: "  [DESIGN]   Figma · Adobe Suite · UX/UI" },
+  ],
+  projects: [
+    { type: "label", text: "./projects" },
+    { type: "value", text: "  01  HireAI" },
+    { type: "value", text: "      RAG-powered recruitment assistant" },
+    { type: "value", text: "      Next.js · TypeScript · DeepEval · Guardrails" },
+    { type: "value", text: "" },
+    { type: "value", text: "  02  Career Copilot" },
+    { type: "value", text: "      AI-driven career coaching platform" },
+    { type: "value", text: "      LLM Orchestration · Prompt Templates · Session Mgmt" },
+  ],
+  contact: [
+    { type: "label", text: "contact.sh" },
+    { type: "link", text: "  email     pandyatrupti531@gmail.com", href: "mailto:pandyatrupti531@gmail.com" },
+    { type: "link", text: "  linkedin  linkedin.com/in/trupti-pandya", href: "https://linkedin.com/in/trupti-pandya" },
+    { type: "link", text: "  github    github.com/Trupti-Pandya", href: "https://github.com/Trupti-Pandya" },
+  ],
+  whoami: [
+    { type: "value", text: "trupti_pandya · LLM Engineer · open_to_offers=true" },
+  ],
+};
+
+function TypeHereHint({ visible }: { visible: boolean }) {
+  const PHRASE = "type here";
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "holding" | "erasing" | "pause">("typing");
+  const [cursorOn, setCursorOn] = useState(true);
+
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    if (phase === "typing") {
+      if (text.length < PHRASE.length) {
+        t = setTimeout(() => setText(PHRASE.slice(0, text.length + 1)), 110);
+      } else {
+        t = setTimeout(() => setPhase("holding"), 1400);
+      }
+    } else if (phase === "holding") {
+      t = setTimeout(() => setPhase("erasing"), 0);
+    } else if (phase === "erasing") {
+      if (text.length > 0) {
+        t = setTimeout(() => setText(text.slice(0, -1)), 60);
+      } else {
+        t = setTimeout(() => setPhase("pause"), 500);
+      }
+    } else {
+      t = setTimeout(() => setPhase("typing"), 300);
+    }
+    return () => clearTimeout(t);
+  }, [text, phase]);
+
+  useEffect(() => {
+    const i = setInterval(() => setCursorOn((v) => !v), 500);
+    return () => clearInterval(i);
+  }, []);
+
+  const cursorChar = cursorOn ? "_" : " ";
+  const slot = (text + cursorChar).padEnd(10, " ");
+  const top = "+ - - - - - - - - - +";
+  const empty = "|                   |";
+  const row = `|    ${slot}     |`;
+  const tail = "  v";
+
+  return (
+    <pre className={`type-here-hint${visible ? " visible" : ""}`} aria-hidden="true">
+      {`${top}
+${empty}
+${row}
+${empty}
+${top}
+${tail}`}
+    </pre>
+  );
+}
 
 export default function InteractiveTerminal() {
   const [tokens, setTokens] = useState(2847);
-  const [history, setHistory] = useState<HistoryItem[]>([
-    { command: "query --profile trupti_pandya", output: defaultOutput },
-  ]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const [inputVal, setInputVal] = useState("");
+  const [focused, setFocused] = useState(false);
+  const [cmdHistory, setCmdHistory] = useState<string[]>([]);
+  const [cmdHistoryIdx, setCmdHistoryIdx] = useState(-1);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const historyBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,111 +141,303 @@ export default function InteractiveTerminal() {
   }, []);
 
   useEffect(() => {
-    const container = endRef.current?.parentElement;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
+    if (historyBoxRef.current) {
+      historyBoxRef.current.scrollTop = historyBoxRef.current.scrollHeight;
     }
   }, [history]);
 
   const handleCommand = (cmd: string) => {
-    const trimmed = cmd.trim();
+    const trimmed = cmd.trim().toLowerCase();
     if (!trimmed) return;
-    
-    let output: ReactNode = null;
-    const lowerCmd = trimmed.toLowerCase();
 
-    if (lowerCmd === "clear") {
+    setCmdHistory(prev => [trimmed, ...prev]);
+    setCmdHistoryIdx(-1);
+
+    if (trimmed === "clear") {
       setHistory([]);
       return;
-    } else if (lowerCmd === "help") {
-      output = (
-        <>
-          <div className="t-line"><span className="t-val">Available commands:</span></div>
-          <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>about</span><span className="t-val">Show a brief introduction</span></div>
-          <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>skills</span><span className="t-val">List technical expertise</span></div>
-          <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>projects</span><span className="t-val">View selected work</span></div>
-          <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>contact</span><span className="t-val">Show contact information</span></div>
-          <div className="t-line"><span className="t-key" style={{ paddingLeft: "20px" }}>clear</span><span className="t-val">Clear terminal output</span></div>
-        </>
-      );
-    } else if (lowerCmd === "about") {
-      output = <div className="t-line"><span className="t-val">MSc Cloud Computing graduate from the University of Leicester — shipping production-grade GenAI products.</span></div>;
-    } else if (lowerCmd === "skills") {
-      output = (
-        <>
-          <div className="t-line"><span className="t-key">Languages</span><span className="t-val">Python, TypeScript, JavaScript</span></div>
-          <div className="t-line"><span className="t-key">Frameworks</span><span className="t-val">React, Next.js</span></div>
-          <div className="t-line"><span className="t-key">AI/LLM</span><span className="t-val">Prompt Engineering, RAG Pipelines, LangChain, Tool Calling</span></div>
-        </>
-      );
-    } else if (lowerCmd === "projects") {
-      output = (
-        <>
-          <div className="t-line"><span className="t-key">01</span><span className="t-val">HireAI - AI recruitment assistant (RAG, Next.js, DeepEval)</span></div>
-          <div className="t-line"><span className="t-key">02</span><span className="t-val">Career Copilot - AI-driven career coaching platform</span></div>
-        </>
-      );
-    } else if (lowerCmd === "contact") {
-      output = (
-        <>
-          <div className="t-line"><span className="t-key">Email</span><span className="t-val"><a href="mailto:truptipandya21901@gmail.com" style={{ color: "var(--lime)", textDecoration: "underline" }}>truptipandya21901@gmail.com</a></span></div>
-          <div className="t-line"><span className="t-key">LinkedIn</span><span className="t-val"><a href="https://linkedin.com/in/trupti-pandya" target="_blank" rel="noopener noreferrer" style={{ color: "var(--lime)", textDecoration: "underline" }}>linkedin.com/in/trupti-pandya</a></span></div>
-        </>
-      );
-    } else {
-      output = <div className="t-line"><span className="t-val" style={{ color: "#ff6b6b" }}>Command not found: {trimmed}. Type &apos;help&apos; for a list of commands.</span></div>;
     }
 
-    setHistory(prev => [...prev, { command: trimmed, output }]);
+    const lines: OutputLine[] = COMMANDS[trimmed] ?? [
+      { type: "error", text: `command not found: ${trimmed}` },
+      { type: "value", text: "type 'help' to list available commands" },
+    ];
+
+    setHistory(prev => [...prev, { command: trimmed, lines }]);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const next = Math.min(cmdHistoryIdx + 1, cmdHistory.length - 1);
+      setCmdHistoryIdx(next);
+      setInputVal(cmdHistory[next] ?? "");
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = Math.max(cmdHistoryIdx - 1, -1);
+      setCmdHistoryIdx(next);
+      setInputVal(next === -1 ? "" : cmdHistory[next] ?? "");
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      const match = Object.keys(COMMANDS).find(c => c.startsWith(inputVal.toLowerCase()));
+      if (match) setInputVal(match);
+    }
   };
 
   return (
-    <div className="terminal-box" onClick={() => inputRef.current?.focus()}>
-      <div className="token-counter">tokens: {tokens.toLocaleString()}</div>
-      <div className="terminal-body" style={{ height: "400px", overflowY: "auto", display: "flex", flexDirection: "column" }}>
-        
-        {history.map((item, i) => (
-          <div key={i} style={{ marginBottom: "16px" }}>
-            <div className="t-cmd" style={{ marginTop: 0, paddingTop: 0, borderTop: "none" }}>
-              <span>$ </span>{item.command}
-            </div>
-            {item.output && <div style={{ marginTop: "8px" }}>{item.output}</div>}
-          </div>
-        ))}
-        
-        <div className="t-cmd" style={{ marginTop: history.length > 0 ? "8px" : 0, paddingTop: 0, borderTop: "none", display: "flex", alignItems: "center" }}>
-          <span>$ </span>
-          <form 
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleCommand(inputVal);
-              setInputVal("");
-            }}
-            style={{ width: "100%", display: "flex", alignItems: "center" }}
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputVal}
-              onChange={(e) => setInputVal(e.target.value)}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "var(--lime)",
-                fontFamily: "var(--mono)",
-                fontSize: "13px",
-                width: "100%",
-                outline: "none",
-                marginLeft: "8px"
-              }}
-              autoComplete="off"
-              spellCheck="false"
-            />
-          </form>
-          <span className="blink" style={{ display: inputVal ? "none" : "inline-block" }}></span>
-        </div>
-        <div ref={endRef} />
+    <div
+      className="terminal-box"
+      onClick={() => inputRef.current?.focus()}
+      style={{ cursor: "text" }}
+    >
+      {/* Title bar */}
+      <div className="token-counter" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "rgba(184,255,87,0.5)", letterSpacing: "0.1em" }}>
+          trupti@portfolio:~$
+        </span>
+        <span>tokens: {tokens.toLocaleString()}</span>
       </div>
+
+      {/* Terminal body */}
+      <div className="terminal-body" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+
+        {/* ASCII background */}
+        <div
+          className={`ascii-bg-wrap${history.length > 0 ? " chat-active" : ""}`}
+          style={{ position: "absolute", inset: 0 }}
+          aria-hidden="true"
+        >
+          <AsciiArt
+            src="/image.png"
+            charset="dense"
+            color="#b8ff57"
+            animated={false}
+            animationStyle="none"
+            resolution={isMobile ? 250 : 500}
+            objectFit="cover"
+            className="w-full h-full"
+          />
+        </div>
+
+        {/* Very thin gradient only right at the bottom edge, for input readability */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, height: "18%",
+          background: "linear-gradient(to top, rgba(6,6,8,0.75) 0%, transparent 100%)",
+          pointerEvents: "none",
+        }} />
+
+        {/* Foreground UI */}
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "18px" }}>
+
+          {/* Top-left: Hi There + hint */}
+          <div className="terminal-greeting">
+            <pre className="terminal-figlet">
+              {HI_THERE}
+            </pre>
+            <div className="terminal-hint">
+              <span>interactive terminal · type </span>
+              <span style={{ color: "#b8ff57", textShadow: "0 0 6px #b8ff57" }}>help</span>
+              <span> to explore</span>
+              <br />
+              <span style={{ opacity: 0.5 }}>↑↓ history · tab autocomplete</span>
+            </div>
+          </div>
+
+          {/* Bottom: history + input */}
+          <div>
+            {/* Chat history */}
+            {history.length > 0 && (
+              <div
+                ref={historyBoxRef}
+                style={{
+                  maxHeight: isMobile ? "220px" : "460px",
+                  overflowY: "auto",
+                  marginBottom: "10px",
+                  paddingRight: "4px",
+                  scrollbarWidth: "none",
+                }}
+              >
+                {history.map((item, i) => (
+                  <div key={i} style={{ marginBottom: "10px" }}>
+                    {/* Command line */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: "14px", color: "rgba(184,255,87,0.4)" }}>❯</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: "14px", color: "#b8ff57", letterSpacing: "0.05em" }}>{item.command}</span>
+                    </div>
+                    {/* Output lines */}
+                    <div style={{ paddingLeft: "18px", borderLeft: "2px solid rgba(184,255,87,0.2)" }}>
+                      {item.lines.map((line, j) => (
+                        <div key={j} style={{ fontFamily: "var(--mono)", fontSize: "14px", lineHeight: 1.8 }}>
+                          {line.type === "label" && (
+                            <span style={{ color: "#b8ff57", opacity: 0.9, letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "12px" }}>
+                              ── {line.text} ──
+                            </span>
+                          )}
+                          {line.type === "value" && (
+                            <span style={{ color: "rgba(184,255,87,0.65)", whiteSpace: "pre" }}>{line.text}</span>
+                          )}
+                          {line.type === "error" && (
+                            <span style={{ color: "#ff6b6b" }}>✗ {line.text}</span>
+                          )}
+                          {line.type === "link" && (
+                            <a
+                              href={line.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "#b8ff57", textDecoration: "none", borderBottom: "1px solid rgba(184,255,87,0.3)" }}
+                              onClick={e => e.stopPropagation()}
+                            >
+                              {line.text}
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div ref={endRef} />
+              </div>
+            )}
+
+            {/* Input bar */}
+            <div style={{ position: "relative" }}>
+              <TypeHereHint visible={!focused && !inputVal && history.length === 0} />
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                borderTop: `1px solid ${focused ? "rgba(184,255,87,0.5)" : "rgba(184,255,87,0.15)"}`,
+                paddingTop: "10px",
+                transition: "border-color 0.2s",
+                boxShadow: focused ? "0 -4px 20px rgba(184,255,87,0.06)" : "none",
+              }}>
+                <span style={{
+                  fontFamily: "var(--mono)",
+                  fontSize: "15px",
+                  color: "#b8ff57",
+                  textShadow: focused ? "0 0 8px #b8ff57" : "none",
+                  transition: "text-shadow 0.2s",
+                  flexShrink: 0,
+                }}>❯</span>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleCommand(inputVal); setInputVal(""); }}
+                  style={{ flex: 1, display: "flex", alignItems: "center" }}
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputVal}
+                    onChange={(e) => setInputVal(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onFocus={() => setFocused(true)}
+                    onBlur={() => setFocused(false)}
+                    placeholder="enter command..."
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "#b8ff57",
+                      fontFamily: "var(--mono)",
+                      fontSize: "15px",
+                      width: "100%",
+                      outline: "none",
+                      caretColor: "#b8ff57",
+                      letterSpacing: "0.04em",
+                    }}
+                    autoComplete="off"
+                    spellCheck="false"
+                  />
+                </form>
+                {!inputVal && (
+                  <span className="blink" style={{ flexShrink: 0 }} />
+                )}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <style>{`
+        div[style*="scrollbar-width"]::-webkit-scrollbar { display: none; }
+        input::placeholder { color: rgba(184,255,87,0.2); }
+
+        .ascii-bg-wrap {
+          transition: filter 0.55s ease, opacity 0.55s ease;
+          will-change: filter, opacity;
+        }
+        .ascii-bg-wrap.chat-active {
+          filter: blur(6px);
+          opacity: 0.45;
+        }
+
+        .terminal-greeting {
+          max-width: 54%;
+          overflow: hidden;
+        }
+        .terminal-figlet {
+          font-family: var(--mono);
+          font-size: 9px;
+          line-height: 1.45;
+          color: #b8ff57;
+          text-shadow: 0 0 14px #b8ff57, 0 0 30px rgba(184,255,87,0.3);
+          margin: 0;
+          white-space: pre;
+          transform-origin: top left;
+        }
+        .terminal-hint {
+          margin-top: 12px;
+          font-family: var(--mono);
+          font-size: 11px;
+          color: rgba(184,255,87,0.55);
+          line-height: 1.9;
+          border-left: 1px solid rgba(184,255,87,0.3);
+          padding-left: 10px;
+        }
+        .type-here-hint {
+          position: absolute;
+          left: -2px;
+          bottom: calc(100% + 2px);
+          margin: 0;
+          padding: 0;
+          font-family: var(--mono);
+          font-size: 9px;
+          line-height: 1.25;
+          color: #b8ff57;
+          text-shadow: 0 0 6px rgba(184,255,87,0.55), 0 0 14px rgba(184,255,87,0.25);
+          white-space: pre;
+          pointer-events: none;
+          user-select: none;
+          opacity: 0;
+          transform: translateY(4px);
+          transition: opacity 0.45s ease, transform 0.45s ease;
+          z-index: 3;
+        }
+        .type-here-hint.visible {
+          opacity: 0.9;
+          transform: translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+          .terminal-greeting { max-width: 70%; }
+          .terminal-figlet { font-size: 7.5px; }
+        }
+        @media (max-width: 768px) {
+          .terminal-greeting { max-width: 100%; }
+          .terminal-figlet {
+            font-size: 5.5px;
+            line-height: 1.4;
+          }
+          .terminal-hint { font-size: 10px; margin-top: 8px; }
+        }
+        @media (max-width: 480px) {
+          .terminal-figlet { font-size: 4px; line-height: 1.35; }
+          .terminal-hint { display: none; }
+          .type-here-hint { display: none; }
+        }
+        @media (max-width: 768px) {
+          .type-here-hint { font-size: 8px; }
+        }
+      `}</style>
     </div>
   );
 }

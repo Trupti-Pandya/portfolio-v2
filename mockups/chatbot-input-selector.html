@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Model Selector in Input — Cursor/Claude Style</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --lime: #b8ff57;
+    --lime-dim: rgba(184,255,87,0.55);
+    --lime-faint: rgba(184,255,87,0.08);
+    --lime-border: rgba(184,255,87,0.18);
+    --bg: #060608;
+    --surface: #0d0d10;
+    --surface2: #111115;
+    --mono: 'Courier New', Courier, monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--lime);
+    font-family: var(--mono);
+    padding: 48px 24px 80px;
+  }
+
+  .page-title {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: rgba(184,255,87,0.3);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .page-heading {
+    text-align: center;
+    font-size: 20px;
+    color: var(--lime);
+    margin-bottom: 8px;
+  }
+  .page-sub {
+    text-align: center;
+    font-size: 11px;
+    color: rgba(184,255,87,0.35);
+    margin-bottom: 56px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── TWO STATES SIDE BY SIDE ── */
+  .states {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto 56px;
+  }
+
+  .state-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: rgba(184,255,87,0.35);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* ── CHAT WINDOW ── */
+  .chat-window {
+    border: 1px solid var(--lime-border);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    height: 520px;
+  }
+
+  /* titlebar */
+  .chat-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--lime-border);
+    background: rgba(184,255,87,0.025);
+    flex-shrink: 0;
+  }
+  .dots { display: flex; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+  .chat-titlebar-id { font-size: 10px; color: rgba(184,255,87,0.3); letter-spacing: 0.12em; }
+  .chat-titlebar-right { font-size: 9px; color: rgba(184,255,87,0.25); }
+
+  /* messages */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 16px 12px;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .msg { display: flex; gap: 9px; align-items: flex-start; }
+  .msg-user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 1px solid var(--lime-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: var(--lime-dim);
+  }
+
+  .bubble {
+    font-size: 12px; line-height: 1.75;
+    padding: 8px 11px;
+    border: 1px solid;
+    max-width: 78%;
+  }
+  .bubble-user {
+    background: var(--lime-faint);
+    border-color: rgba(184,255,87,0.22);
+    color: var(--lime);
+  }
+  .bubble-ai {
+    background: rgba(255,255,255,0.015);
+    border-color: rgba(184,255,87,0.1);
+    color: rgba(184,255,87,0.7);
+  }
+
+  .provider-tag {
+    display: inline-block;
+    font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 1px 6px; margin-bottom: 5px;
+    border: 1px solid;
+  }
+  .tag-azure { color: #60aaff; border-color: rgba(0,120,212,0.35); background: rgba(0,120,212,0.07); }
+  .tag-aws   { color: #ffb84d; border-color: rgba(255,153,0,0.35);  background: rgba(255,153,0,0.07); }
+  .tag-gcp   { color: #7ab4ff; border-color: rgba(66,133,244,0.35); background: rgba(66,133,244,0.07); }
+
+  .blink { animation: blink 1s step-end infinite; display: inline-block; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ════════════════════════════════
+     INPUT AREA — THE KEY PART
+  ════════════════════════════════ */
+  .input-area {
+    border-top: 1px solid var(--lime-border);
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  /* the main text input */
+  .input-field-wrap {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 12px 6px;
+    gap: 8px;
+    min-height: 44px;
+  }
+  .input-field {
+    flex: 1;
+    background: transparent;
+    border: none; outline: none;
+    color: var(--lime);
+    font-family: var(--mono);
+    font-size: 12px;
+    resize: none;
+    line-height: 1.6;
+    caret-color: var(--lime);
+    padding-top: 2px;
+  }
+  .input-field::placeholder { color: rgba(184,255,87,0.2); }
+
+  /* BOTTOM BAR — model chip + send */
+  .input-bottombar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 12px 8px;
+  }
+
+  /* MODEL CHIP — the Cursor-style selector */
+  .model-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px 3px 7px;
+    border: 1px solid var(--lime-border);
+    background: rgba(184,255,87,0.04);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 10px;
+    color: var(--lime-dim);
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+  .model-chip:hover { background: rgba(184,255,87,0.08); border-color: rgba(184,255,87,0.3); }
+
+  .model-chip-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-azure { background: #0078D4; box-shadow: 0 0 4px rgba(0,120,212,0.7); }
+  .dot-aws   { background: #FF9900; box-shadow: 0 0 4px rgba(255,153,0,0.7); }
+  .dot-gcp   { background: #4285F4; box-shadow: 0 0 4px rgba(66,133,244,0.7); }
+
+  .model-chip-name { color: var(--lime); font-weight: normal; }
+  .model-chip-caret { font-size: 8px; color: rgba(184,255,87,0.35); margin-left: 2px; }
+
+  /* send button */
+  .send-btn {
+    width: 26px; height: 26px;
+    background: var(--lime);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .send-btn svg { width: 12px; height: 12px; }
+  .send-btn-inactive {
+    background: transparent;
+    border: 1px solid var(--lime-border);
+  }
+  .send-btn-inactive svg { stroke: rgba(184,255,87,0.3); }
+  .send-btn svg { stroke: #060608; }
+
+  /* ════════════════════════════════
+     MODEL PICKER POPUP
+  ════════════════════════════════ */
+  .model-picker {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 12px;
+    width: 280px;
+    background: #13131a;
+    border: 1px solid rgba(184,255,87,0.22);
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(184,255,87,0.05);
+    z-index: 10;
+  }
+
+  .picker-header {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(184,255,87,0.1);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: rgba(184,255,87,0.3);
+    text-transform: uppercase;
+  }
+
+  .picker-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-bottom: 1px solid rgba(184,255,87,0.05);
+  }
+  .picker-option:last-child { border-bottom: none; }
+  .picker-option:hover { background: rgba(184,255,87,0.04); }
+  .picker-option.active { background: rgba(184,255,87,0.06); }
+
+  .picker-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .picker-info { flex: 1; }
+  .picker-model { font-size: 11px; color: var(--lime); margin-bottom: 1px; }
+  .picker-provider { font-size: 9px; color: rgba(184,255,87,0.4); }
+  .picker-cost { font-size: 9px; color: rgba(184,255,87,0.3); margin-left: auto; flex-shrink: 0; }
+  .picker-check { font-size: 10px; color: var(--lime); flex-shrink: 0; }
+
+  .picker-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-bottom: 1px solid rgba(184,255,87,0.1);
+  }
+  .picker-search-icon { font-size: 10px; color: rgba(184,255,87,0.25); }
+  .picker-search-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--lime); font-family: var(--mono); font-size: 10px;
+  }
+  .picker-search-input::placeholder { color: rgba(184,255,87,0.2); }
+
+  /* ── ANNOTATION CALLOUTS ── */
+  .annotations {
+    max-width: 1000px;
+    margin: 0 auto 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .ann {
+    border: 1px solid var(--lime-border);
+    padding: 14px 16px;
+  }
+  .ann-num { font-size: 9px; letter-spacing: 0.2em; color: rgba(184,255,87,0.3); margin-bottom: 6px; }
+  .ann-title { font-size: 12px; color: var(--lime); margin-bottom: 4px; }
+  .ann-text { font-size: 10px; color: rgba(184,255,87,0.4); line-height: 1.7; }
+
+  /* ── FULL SECTION MOCKUP ── */
+  .section-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    border: 1px solid var(--lime-border);
+    background: var(--surface);
+    padding: 36px;
+  }
+  .sec-marker {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+  }
+  .sec-num { font-size: 10px; color: rgba(184,255,87,0.3); letter-spacing: 0.15em; }
+  .sec-line { width: 40px; height: 1px; background: var(--lime-border); }
+  .sec-lbl { font-size: 9px; letter-spacing: 0.2em; color: rgba(184,255,87,0.3); text-transform: uppercase; }
+  .sec-heading { font-size: 26px; line-height: 1.2; margin-bottom: 24px; }
+  .sec-heading em { font-style: italic; color: rgba(184,255,87,0.45); }
+
+  .full-chat {
+    border: 1px solid var(--lime-border);
+    background: #0a0a0d;
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+  }
+  .full-chat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--lime-border);
+    background: rgba(184,255,87,0.02);
+    flex-shrink: 0;
+  }
+  .full-chat-title { font-size: 9px; letter-spacing: 0.2em; color: rgba(184,255,87,0.3); text-transform: uppercase; }
+  .full-chat-status { display: flex; align-items: center; gap: 6px; font-size: 9px; color: rgba(184,255,87,0.3); }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #28c840; box-shadow: 0 0 4px #28c840; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+</style>
+</head>
+<body>
+
+<p class="page-title">portfolio chatbot · ui pattern</p>
+<p class="page-heading">Model Selection in the Input Bar</p>
+<p class="page-sub">Cursor / Claude style — pick your model right where you type</p>
+
+<!-- TWO STATES -->
+<div class="states">
+
+  <!-- STATE 1: default, picker closed -->
+  <div>
+    <p class="state-label">// state 1 — default (picker closed)</p>
+    <div class="chat-window">
+      <div class="chat-titlebar">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="chat-titlebar-id">trupti@portfolio · ai assistant</span>
+        <span class="chat-titlebar-right">session active</span>
+      </div>
+
+      <div class="chat-messages">
+        <div class="msg">
+          <div class="avatar">AI</div>
+          <div>
+            <span class="provider-tag tag-azure">gpt-4.1-mini · azure</span>
+            <div class="bubble bubble-ai">
+              Hi! I'm Trupti's assistant running on Azure OpenAI. Ask me about her skills, projects, or experience — or switch models below.
+            </div>
+          </div>
+        </div>
+
+        <div class="msg msg-user">
+          <div class="avatar">U</div>
+          <div class="bubble bubble-user">What LLM frameworks does she know?</div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar">AI</div>
+          <div>
+            <span class="provider-tag tag-azure">gpt-4.1-mini · azure</span>
+            <div class="bubble bubble-ai">
+              Trupti works with LangChain, LlamaIndex, and has built custom RAG pipelines from scratch. She's also experienced with evaluation frameworks like DeepEval and Langfuse for production LLM systems. <span class="blink">_</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT AREA -->
+      <div class="input-area">
+        <div class="input-field-wrap">
+          <textarea class="input-field" rows="1" placeholder="ask anything about Trupti..."></textarea>
+        </div>
+        <div class="input-bottombar">
+          <!-- MODEL CHIP — click to open picker -->
+          <div class="model-chip">
+            <span class="model-chip-dot dot-azure"></span>
+            <span class="model-chip-name">gpt-4.1-mini</span>
+            <span style="font-size:9px;color:rgba(184,255,87,0.3);margin:0 2px">·</span>
+            <span style="font-size:9px;color:rgba(0,120,212,0.7)">Azure</span>
+            <span class="model-chip-caret">⌃</span>
+          </div>
+          <div class="send-btn send-btn-inactive">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 2: picker open -->
+  <div>
+    <p class="state-label">// state 2 — model picker open (click chip)</p>
+    <div class="chat-window">
+      <div class="chat-titlebar">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span class="chat-titlebar-id">trupti@portfolio · ai assistant</span>
+        <span class="chat-titlebar-right">session active</span>
+      </div>
+
+      <div class="chat-messages">
+        <div class="msg">
+          <div class="avatar">AI</div>
+          <div>
+            <span class="provider-tag tag-azure">gpt-4.1-mini · azure</span>
+            <div class="bubble bubble-ai">
+              Hi! I'm Trupti's assistant running on Azure OpenAI. Ask me about her skills, projects, or experience — or switch models below.
+            </div>
+          </div>
+        </div>
+
+        <div class="msg msg-user">
+          <div class="avatar">U</div>
+          <div class="bubble bubble-user">What LLM frameworks does she know?</div>
+        </div>
+
+        <div class="msg">
+          <div class="avatar">AI</div>
+          <div>
+            <span class="provider-tag tag-azure">gpt-4.1-mini · azure</span>
+            <div class="bubble bubble-ai">
+              Trupti works with LangChain, LlamaIndex, and has built custom RAG pipelines from scratch. <span class="blink">_</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT AREA WITH PICKER OPEN -->
+      <div class="input-area">
+
+        <!-- PICKER POPUP -->
+        <div class="model-picker">
+          <div class="picker-header">// select model</div>
+          <div class="picker-search">
+            <span class="picker-search-icon">⌕</span>
+            <input class="picker-search-input" placeholder="search models..." />
+          </div>
+          <div class="picker-option active">
+            <div class="picker-dot" style="background:#0078D4;box-shadow:0 0 5px rgba(0,120,212,0.8)"></div>
+            <div class="picker-info">
+              <div class="picker-model">gpt-4.1-mini</div>
+              <div class="picker-provider">Azure OpenAI · UK South</div>
+            </div>
+            <span class="picker-cost">~£0.05/mo</span>
+            <span class="picker-check">✓</span>
+          </div>
+          <div class="picker-option">
+            <div class="picker-dot" style="background:#FF9900;box-shadow:0 0 5px rgba(255,153,0,0.8)"></div>
+            <div class="picker-info">
+              <div class="picker-model">Nova Micro</div>
+              <div class="picker-provider">AWS Bedrock · EU London</div>
+            </div>
+            <span class="picker-cost">~£0.02/mo</span>
+          </div>
+          <div class="picker-option">
+            <div class="picker-dot" style="background:#4285F4;box-shadow:0 0 5px rgba(66,133,244,0.8)"></div>
+            <div class="picker-info">
+              <div class="picker-model">Gemini 1.5 Flash</div>
+              <div class="picker-provider">Google Cloud · Vertex AI</div>
+            </div>
+            <span class="picker-cost" style="color:#34a853">Free</span>
+          </div>
+        </div>
+
+        <div class="input-field-wrap">
+          <textarea class="input-field" rows="1" placeholder="ask anything about Trupti..."></textarea>
+        </div>
+        <div class="input-bottombar">
+          <div class="model-chip" style="border-color:rgba(184,255,87,0.35);background:rgba(184,255,87,0.08)">
+            <span class="model-chip-dot dot-azure"></span>
+            <span class="model-chip-name">gpt-4.1-mini</span>
+            <span style="font-size:9px;color:rgba(184,255,87,0.3);margin:0 2px">·</span>
+            <span style="font-size:9px;color:rgba(0,120,212,0.7)">Azure</span>
+            <span class="model-chip-caret">⌄</span>
+          </div>
+          <div class="send-btn send-btn-inactive">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOTATIONS -->
+<div class="annotations">
+  <div class="ann">
+    <div class="ann-num">01 · MODEL CHIP</div>
+    <div class="ann-title">Inline selector in the input bar</div>
+    <div class="ann-text">A small clickable chip sits bottom-left of the input — shows the active provider dot + model name. Exactly how Cursor and Claude.ai do it. One click opens the picker.</div>
+  </div>
+  <div class="ann">
+    <div class="ann-num">02 · PICKER POPUP</div>
+    <div class="ann-title">Floats above the input</div>
+    <div class="ann-text">A compact dropdown lists all three providers with model name, region, and cost. Checkmark shows active. Click any to switch — the chip updates instantly, next message uses the new model.</div>
+  </div>
+  <div class="ann">
+    <div class="ann-num">03 · PROVIDER DOT</div>
+    <div class="ann-title">Colour-coded at a glance</div>
+    <div class="ann-text">Azure = blue glow. AWS = orange glow. GCP = purple glow. The dot in the chat bubble header and in the chip always match — visitor always knows which hyperscaler answered.</div>
+  </div>
+</div>
+
+<!-- FULL IN-PAGE VERSION -->
+<div class="section-wrapper">
+  <div class="sec-marker">
+    <div class="sec-num">06</div>
+    <div class="sec-line"></div>
+    <div class="sec-lbl">ai.playground</div>
+  </div>
+  <div class="sec-heading">Chat with<br/><em>my AI.</em></div>
+  <div style="font-size:11px;color:rgba(184,255,87,0.35);margin-bottom:20px;line-height:1.8">
+    Powered by three real hyperscaler APIs. Switch models in the input bar — each response is labelled with its provider and region.
+  </div>
+
+  <div class="full-chat">
+    <div class="full-chat-header">
+      <span class="full-chat-title">// ai assistant · multi-provider</span>
+      <span class="full-chat-status">
+        <span class="status-dot"></span>
+        gpt-4.1-mini · azure openai · uk-south · live
+      </span>
+    </div>
+
+    <div class="chat-messages" style="flex:1;overflow-y:auto;padding:18px 20px 12px;display:flex;flex-direction:column;gap:14px">
+      <div class="msg">
+        <div class="avatar">AI</div>
+        <div>
+          <span class="provider-tag tag-azure">gpt-4.1-mini · azure openai</span>
+          <div class="bubble bubble-ai">Hi! I'm Trupti's AI assistant. I'm currently running on Azure OpenAI (UK South). You can switch to AWS or GCP in the input bar below — each uses a different model and hyperscaler.</div>
+        </div>
+      </div>
+
+      <div class="msg msg-user">
+        <div class="avatar">U</div>
+        <div class="bubble bubble-user">Is she available for hire?</div>
+      </div>
+
+      <div class="msg">
+        <div class="avatar">AI</div>
+        <div>
+          <span class="provider-tag tag-azure">gpt-4.1-mini · azure openai</span>
+          <div class="bubble bubble-ai">Yes — Trupti is actively looking for AI/ML Engineering roles in the UK. She's based in Leicester, open to remote and hybrid. Right to work in the UK. <span class="blink">_</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUT WITH CHIP -->
+    <div class="input-area" style="border-top:1px solid var(--lime-border)">
+      <div class="input-field-wrap">
+        <textarea class="input-field" rows="1" placeholder="ask anything about Trupti..." style="font-size:13px"></textarea>
+      </div>
+      <div class="input-bottombar">
+        <div class="model-chip">
+          <span class="model-chip-dot dot-azure"></span>
+          <span class="model-chip-name">gpt-4.1-mini</span>
+          <span style="font-size:9px;color:rgba(184,255,87,0.3);margin:0 3px">·</span>
+          <span style="font-size:9px;color:rgba(0,120,212,0.65)">Azure OpenAI</span>
+          <span style="font-size:9px;color:rgba(184,255,87,0.2);margin:0 3px">·</span>
+          <span style="font-size:9px;color:rgba(184,255,87,0.3)">uk-south</span>
+          <span class="model-chip-caret" style="margin-left:4px">⌃</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:9px;color:rgba(184,255,87,0.2)">enter ↵</span>
+          <div class="send-btn send-btn-inactive">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px;font-size:9px;color:rgba(184,255,87,0.25);letter-spacing:0.1em;text-align:right">
+    click the model chip to switch between AWS · Azure · GCP
+  </div>
+</div>
+
+</body>
+</html>

@@ -43,3 +43,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude brainstorm artifacts
+.superpowers/
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
