@@ -35,7 +35,7 @@ const PROVIDERS: Record<Provider, ProviderConfig> = {
   gcp: {
     label: "Google Cloud",
     model: "Gemini 2.5 Flash",
-    region: "generative-ai",
+    region: "europe-west2",
     color: "#c3f260",
     dot: "rgba(195,242,96,0.9)",
     tone: "Strategist",
@@ -46,6 +46,11 @@ const ACCENT = "#c3f260";        // matches homepage var(--accent) = oklch(0.9 0
 const ACCENT_RGB = "195, 242, 96";
 const STORAGE_KEY = "tp_pa_msgs";
 const MAX_STORED = 4; // last 2 user+AI pairs
+
+// Shown when the model provider is unconfigured/unreachable, so the visitor
+// never sees a silent empty bubble.
+const UNAVAILABLE_MSG =
+  "⚠ Sorry, the assistant is unavailable right now. Please try again shortly, or email Trupti directly at pandyatrupti531@gmail.com.";
 
 const INITIAL_MSG = {
   role: "ai" as const,
@@ -256,6 +261,7 @@ export default function ChatWidget() {
       const decoder = new TextDecoder();
       let accumulated = "";
       let bookingFailed = false;
+      let streamError = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -273,14 +279,22 @@ export default function ChatWidget() {
                 return next;
               });
             }
+            if (payload.error) streamError = true;
             if (payload.booking === "failed") bookingFailed = true;
           } catch { /* partial line */ }
         }
       }
+      // Never leave an empty bubble: if the stream errored (e.g. the model
+      // provider is unconfigured/unreachable) or produced no text at all, show
+      // an honest unavailable message instead of a blank box.
       setMessages(prev => {
         const next = [...prev];
         const last = next[next.length - 1];
-        if (last?.streaming) next[next.length - 1] = { ...last, streaming: false };
+        if (last?.streaming) {
+          next[next.length - 1] = streamError || !accumulated.trim()
+            ? { role: "ai", text: UNAVAILABLE_MSG, provider }
+            : { ...last, streaming: false };
+        }
         return next;
       });
 
@@ -587,7 +601,21 @@ export default function ChatWidget() {
                   padding: "7px 11px", borderBottom: `1px solid rgba(${ACCENT_RGB},0.1)`,
                   fontFamily: "var(--mono)", fontSize: "8px",
                   letterSpacing: "0.2em", color: `rgba(${ACCENT_RGB},0.3)`, textTransform: "uppercase",
-                }}>{"// select model"}</div>
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                }}>
+                  <span>{"// select model"}</span>
+                  <button
+                    type="button"
+                    aria-label="Close model selector"
+                    onClick={() => { setPickerOpen(false); inputRef.current?.focus(); }}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      width: 16, height: 16, padding: 0, cursor: "pointer",
+                      background: "transparent", border: "none",
+                      color: `rgba(${ACCENT_RGB},0.5)`, fontSize: "12px", lineHeight: 1,
+                    }}
+                  >✕</button>
+                </div>
                 {(Object.entries(PROVIDERS) as [Provider, ProviderConfig][]).map(([key, p]) => (
                   <div key={key} onClick={() => { setProvider(key); setPickerOpen(false); inputRef.current?.focus(); }}
                     style={{
@@ -598,14 +626,14 @@ export default function ChatWidget() {
                     <div style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: p.dot, boxShadow: `0 0 6px ${p.dot}` }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
-                        <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "#fff" }}>{p.model}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "#fff" }}>{p.label}</span>
                         <span style={{
                           fontFamily: "var(--mono)", fontSize: "7px", padding: "1px 4px",
                           border: `1px solid ${p.color}44`, color: p.color, background: `${p.color}15`, borderRadius: "2px",
                         }}>{p.tone}</span>
                       </div>
                       <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: `rgba(${ACCENT_RGB},0.35)` }}>
-                        {p.label} · {p.region}
+                        {p.model} · {p.region}
                       </div>
                     </div>
                     {provider === key && <span style={{ fontFamily: "var(--mono)", fontSize: "10px", color: ACCENT }}>✓</span>}
@@ -641,7 +669,7 @@ export default function ChatWidget() {
                 color: `rgba(${ACCENT_RGB},0.5)`, letterSpacing: "0.03em", transition: "all 0.15s",
               }} aria-label="Select AI provider">
                 <span style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0, background: cfg.dot, boxShadow: `0 0 4px ${cfg.dot}` }} />
-                <span style={{ color: "#fff", fontWeight: 500 }}>{cfg.model}</span>
+                <span style={{ color: "#fff", fontWeight: 500 }}>{cfg.label}</span>
                 <span style={{ color: `rgba(${ACCENT_RGB},0.25)`, margin: "0 1px" }}>·</span>
                 <span style={{ fontSize: "7px", padding: "1px 4px", border: `1px solid ${cfg.color}44`, color: cfg.color, background: `${cfg.color}15`, borderRadius: "2px" }}>
                   {cfg.tone}
