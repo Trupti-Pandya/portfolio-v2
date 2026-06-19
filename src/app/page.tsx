@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import ChatWidget from "../components/ChatWidget";
 
@@ -702,9 +703,50 @@ export default function Home() {
             </svg>
           </div>
         </div>
-        <div className="cert-strip">
-          <div className="cert-strip-text">✓ Certified · Databricks Academy — Generative AI Fundamentals</div>
-          <div className="cert-strip-badge">Verified credential</div>
+        <div className="certs">
+          <div className="certs-label">✓ Certifications</div>
+          <div className="certs-grid">
+            {[
+              {
+                img: "/e025dc93-9e1f-45dd-9793-92ee174175db.png",
+                name: "Generative AI Fundamentals",
+                issuer: "Databricks Academy",
+                verifyUrl: "https://credentials.databricks.com/9be6b0e2-0f56-4357-b9e9-4674eaf44bdc",
+              },
+              {
+                img: "/ai-skills-fest-2026.png",
+                name: "AI Skills Fest 2026",
+                issuer: "Microsoft",
+                verifyUrl: "https://www.credly.com/badges/05480688-6840-4753-8108-79cb62144901/public_url",
+              },
+            ].map((c) => {
+              const inner = (
+                <>
+                  <Image
+                    src={c.img}
+                    alt={`${c.name} — ${c.issuer} badge`}
+                    width={80}
+                    height={80}
+                    className="cert-img"
+                  />
+                  <div className="cert-info">
+                    <div className="cert-name">{c.name}</div>
+                    <div className="cert-issuer">{c.issuer}</div>
+                    {c.verifyUrl && <span className="cert-verify">Verify ↗</span>}
+                  </div>
+                </>
+              );
+              return c.verifyUrl ? (
+                <a key={c.name} href={c.verifyUrl} target="_blank" rel="noopener noreferrer" className="cert-card">
+                  {inner}
+                </a>
+              ) : (
+                <div key={c.name} className="cert-card">
+                  {inner}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
