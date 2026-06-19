@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createBookingRequest, resolveBaseUrl } from "@/lib/booking";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { validateBooking } from "@/lib/api-validation";
 
 export async function POST(req: NextRequest) {
   try {
+    // Tight per-IP limit: each booking sends a real email + DB insert.
+    const rl = await rateLimit("booking", clientIp(req), 3, 3600);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many booking requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": "3600" } },
+      );
+    }
+
     const { name, email, preferredTime, reason, company, notes } = await req.json() as {
       name: string;
       email: string;
@@ -12,8 +23,9 @@ export async function POST(req: NextRequest) {
       notes?: string;
     };
 
-    if (!name || !email || !preferredTime || !reason) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    const invalid = validateBooking({ name, email, preferredTime, reason, company, notes });
+    if (invalid) {
+      return NextResponse.json({ error: invalid }, { status: 400 });
     }
 
     await createBookingRequest({

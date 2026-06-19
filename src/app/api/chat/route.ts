@@ -7,6 +7,8 @@ import { join } from "path";
 import { PERSONAS, Provider } from "@/lib/personas";
 import { retrieveContext } from "@/lib/rag";
 import { createBookingRequest, resolveBaseUrl } from "@/lib/booking";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { validateChatMessages } from "@/lib/api-validation";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -160,13 +162,29 @@ const streamers: Record<Provider, (msgs: ChatMessage[], p: Provider, rag: string
 
 export async function POST(req: NextRequest) {
   try {
+    // Throttle per IP before doing any model work (denial-of-wallet defense).
+    const rl = await rateLimit("chat", clientIp(req), 15, 60);
+    if (!rl.success) {
+      return new Response(JSON.stringify({ error: "Rate limit exceeded. Please slow down." }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", "Retry-After": "60" },
+      });
+    }
+
     const { messages, provider } = await req.json() as {
       messages: ChatMessage[];
       provider: Provider;
     };
 
-    if (!messages?.length || !provider || !streamers[provider]) {
-      return new Response(JSON.stringify({ error: "Missing messages or invalid provider" }), {
+    if (!provider || !streamers[provider]) {
+      return new Response(JSON.stringify({ error: "Invalid provider" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const invalid = validateChatMessages(messages);
+    if (invalid) {
+      return new Response(JSON.stringify({ error: invalid }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
