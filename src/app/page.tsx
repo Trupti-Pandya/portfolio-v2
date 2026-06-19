@@ -704,7 +704,7 @@ export default function Home() {
           </div>
         </div>
         <div className="certs">
-          <div className="certs-label">✓ Certifications</div>
+          <div className="certs-label">✓ Credentials</div>
           <div className="certs-wall">
             {[
               {
