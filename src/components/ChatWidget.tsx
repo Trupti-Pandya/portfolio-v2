@@ -255,6 +255,15 @@ export default function ChatWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: apiMessages, provider }),
       });
+      if (res.status === 429) {
+        setMessages(prev => {
+          const next = [...prev];
+          const last = next[next.length - 1];
+          if (last?.streaming) next[next.length - 1] = { role: "ai", text: "⚠ You're sending messages a little too quickly. Please wait a moment and try again.", provider };
+          return next;
+        });
+        return;
+      }
       if (!res.ok || !res.body) throw new Error("Stream failed");
 
       const reader = res.body.getReader();
