@@ -121,6 +121,7 @@ export default function ChatWidget() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [fabBottom, setFabBottom] = useState(24);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
   // tracks whether we've loaded from storage (avoids overwriting storage on initial render)
   const hydratedRef = useRef(false);
 
@@ -166,17 +167,19 @@ export default function ChatWidget() {
     if (container) container.scrollTop = container.scrollHeight;
   }, [messages]);
 
-  /* ── keep messages scrolled to bottom when mobile keyboard opens/closes ── */
+  /* ── track visualViewport so the modal fits above the keyboard on mobile ── */
   useEffect(() => {
-    if (!chatOpen) return;
+    if (!chatOpen) { setViewportHeight(null); return; }
     const vv = window.visualViewport;
     if (!vv) return;
     const onResize = () => {
+      setViewportHeight(vv.height);
       requestAnimationFrame(() => {
         const container = messagesContainerRef.current;
         if (container) container.scrollTop = container.scrollHeight;
       });
     };
+    onResize();
     vv.addEventListener("resize", onResize);
     return () => vv.removeEventListener("resize", onResize);
   }, [chatOpen]);
@@ -202,7 +205,7 @@ export default function ChatWidget() {
         visible but parks just above the footer instead of overlapping it ── */
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > window.innerHeight * 0.7);
+      setScrolled(window.innerWidth < 1024 || window.scrollY > window.innerHeight * 0.7);
       const base = window.innerWidth < 768 ? 16 : 24; // matches .chat-fab CSS
       const footer = document.querySelector(".footer");
       if (footer) {
@@ -517,7 +520,8 @@ export default function ChatWidget() {
 
         <div className="chat-scrim" data-open={chatOpen} onClick={closeChat} aria-hidden="true" />
 
-        <div className="chat-modal" data-open={chatOpen} role="dialog" aria-modal="true" aria-label="Chat with Trupti's AI assistant">
+        <div className="chat-modal" data-open={chatOpen} role="dialog" aria-modal="true" aria-label="Chat with Trupti's AI assistant"
+          style={isMobile && viewportHeight != null ? { height: viewportHeight } : undefined}>
           {/* Header */}
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
