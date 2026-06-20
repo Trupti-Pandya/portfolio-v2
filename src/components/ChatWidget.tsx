@@ -122,6 +122,7 @@ export default function ChatWidget() {
   const [scrolled, setScrolled] = useState(false);
   const [fabBottom, setFabBottom] = useState(24);
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  const [viewportTop, setViewportTop] = useState(0);
   // tracks whether we've loaded from storage (avoids overwriting storage on initial render)
   const hydratedRef = useRef(false);
 
@@ -131,7 +132,7 @@ export default function ChatWidget() {
 
   /* ── responsive ── */
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setIsMobile(window.innerWidth < 1024);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
@@ -174,6 +175,7 @@ export default function ChatWidget() {
     if (!vv) return;
     const onResize = () => {
       setViewportHeight(vv.height);
+      setViewportTop(vv.offsetTop);
       requestAnimationFrame(() => {
         const container = messagesContainerRef.current;
         if (container) container.scrollTop = container.scrollHeight;
@@ -488,12 +490,12 @@ export default function ChatWidget() {
           font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
           flex-shrink:0;transition:background .15s }
         .chat-x:hover { background:rgba(${ACCENT_RGB},0.12) }
-        @media (max-width:768px) {
-          .chat-modal { width:100vw;height:100dvh;top:0;left:0;transform:translateY(18px);border:none;
+        @media (max-width:1024px) {
+          .chat-modal { width:100vw;top:0;left:0;border:none;
+            transform:none !important;
             padding-top:env(safe-area-inset-top, 0px) }
-          .chat-modal[data-open="true"] { transform:translateY(0) }
+          .chat-modal[data-open="true"] { transform:none !important }
           .chat-fab { right:16px;bottom:16px;font-size:12px;padding:11px 15px }
-          /* larger, obvious 44px close target on touch screens */
           .chat-x { width:44px;height:44px;font-size:18px;border-color:rgba(${ACCENT_RGB},0.4);background:rgba(${ACCENT_RGB},0.08) }
         }
       `}</style>
@@ -521,7 +523,7 @@ export default function ChatWidget() {
         <div className="chat-scrim" data-open={chatOpen} onClick={closeChat} aria-hidden="true" />
 
         <div className="chat-modal" data-open={chatOpen} role="dialog" aria-modal="true" aria-label="Chat with Trupti's AI assistant"
-          style={isMobile && viewportHeight != null ? { height: viewportHeight } : undefined}>
+          style={isMobile && viewportHeight != null ? { height: viewportHeight, top: viewportTop } : undefined}>
           {/* Header */}
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
