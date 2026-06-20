@@ -166,6 +166,21 @@ export default function ChatWidget() {
     if (container) container.scrollTop = container.scrollHeight;
   }, [messages]);
 
+  /* ── keep messages scrolled to bottom when mobile keyboard opens/closes ── */
+  useEffect(() => {
+    if (!chatOpen) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const onResize = () => {
+      requestAnimationFrame(() => {
+        const container = messagesContainerRef.current;
+        if (container) container.scrollTop = container.scrollHeight;
+      });
+    };
+    vv.addEventListener("resize", onResize);
+    return () => vv.removeEventListener("resize", onResize);
+  }, [chatOpen]);
+
   /* ── close picker on outside click ── */
   useEffect(() => {
     const handler = (e: MouseEvent) => {
