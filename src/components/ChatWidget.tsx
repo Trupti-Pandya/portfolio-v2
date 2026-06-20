@@ -245,10 +245,23 @@ export default function ChatWidget() {
 
   /* ── lock page scroll + focus the input while the modal is open ── */
   useEffect(() => {
-    if (!chatOpen) { document.body.style.overflow = ""; return; }
+    if (!chatOpen) return;
+    const scrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
     document.body.style.overflow = "hidden";
     const t = setTimeout(() => inputRef.current?.focus(), 80);
-    return () => { clearTimeout(t); document.body.style.overflow = ""; };
+    return () => {
+      clearTimeout(t);
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      window.scrollTo(0, scrollY);
+    };
   }, [chatOpen]);
 
   const send = async () => {
@@ -491,7 +504,8 @@ export default function ChatWidget() {
           flex-shrink:0;transition:background .15s }
         .chat-x:hover { background:rgba(${ACCENT_RGB},0.12) }
         @media (max-width:1024px) {
-          .chat-modal { width:100vw;top:0;left:0;border:none;
+          .chat-modal { width:calc(100vw - 16px);left:8px;top:8px;
+            border:1px solid rgba(${ACCENT_RGB},0.22);
             transform:none !important;
             padding-top:env(safe-area-inset-top, 0px) }
           .chat-modal[data-open="true"] { transform:none !important }
@@ -523,7 +537,7 @@ export default function ChatWidget() {
         <div className="chat-scrim" data-open={chatOpen} onClick={closeChat} aria-hidden="true" />
 
         <div className="chat-modal" data-open={chatOpen} role="dialog" aria-modal="true" aria-label="Chat with Trupti's AI assistant"
-          style={isMobile && viewportHeight != null ? { height: viewportHeight, top: viewportTop } : undefined}>
+          style={isMobile && viewportHeight != null ? { height: viewportHeight - 16, top: viewportTop + 8 } : undefined}>
           {/* Header */}
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -546,6 +560,7 @@ export default function ChatWidget() {
           <div ref={messagesContainerRef} style={{
             flex: 1, overflowY: "auto", padding: "14px",
             scrollbarWidth: "none", display: "flex", flexDirection: "column", gap: "10px",
+            overscrollBehavior: "contain", WebkitOverflowScrolling: "touch",
           }}>
             {messages.map((msg, i) => {
               const msgCfg = msg.provider ? PROVIDERS[msg.provider] : null;
