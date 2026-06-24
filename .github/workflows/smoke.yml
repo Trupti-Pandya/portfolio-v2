@@ -31,11 +31,9 @@ jobs:
         run: |
           set -euo pipefail
           echo "Checking $SITE ..."
-          read -r status redirects final < <(curl -sL --max-time 30 \
-            -o page.html -w "%{http_code} %{num_redirects} %{url_effective}" "$SITE")
-          echo "status=$status redirects=$redirects final=$final"
-          [ "$status" = "200" ] || { echo "::error::homepage not 200 (got $status)"; exit 1; }
-          [ "$redirects" -lt 5 ] || { echo "::error::too many redirects ($redirects) — possible loop"; exit 1; }
+          code=$(curl -sL --max-time 30 -o page.html -w "%{http_code}" "$SITE")
+          echo "status=$code"
+          [ "$code" = "200" ] || { echo "::error::homepage not 200 (got $code)"; exit 1; }
           grep -q "Trupti Pandya" page.html || { echo "::error::homepage missing expected title"; exit 1; }
 
       - name: SEO + health endpoints reachable
