@@ -719,6 +719,12 @@ export default function Home() {
                 issuer: "Microsoft",
                 verifyUrl: "https://www.credly.com/badges/05480688-6840-4753-8108-79cb62144901/public_url",
               },
+              {
+                img: "/agentic-ai-hackathon-2026.png",
+                name: "Agentic AI Hackathon — AI Agent Master",
+                issuer: "Microsoft Foundry",
+                verifyUrl: "https://info.microsoft.com/rs/157-GQE-382/images/EN-WBNR-SlideDeck-SREVM91934-badge.pdf?version=0",
+              },
             ].map((c) => (
               <a
                 key={c.name}
