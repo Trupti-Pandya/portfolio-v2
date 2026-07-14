@@ -378,6 +378,7 @@ export default function Home() {
           </div>
           <div className="hero-cta">
             <a href="#projects" className="btn btn-lime">run --projects ›</a>
+            <a href="/Trupti_Pandya_CV.pdf" target="_blank" rel="noopener noreferrer" className="btn btn-ghost">./resume.pdf ↗</a>
             <a href="#contact" className="btn btn-ghost">./contact.sh</a>
           </div>
           {/* scroll indicator – fades out once user scrolls */}
