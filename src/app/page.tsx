@@ -726,6 +726,18 @@ export default function Home() {
                 issuer: "Microsoft Foundry",
                 verifyUrl: "https://info.microsoft.com/rs/157-GQE-382/images/EN-WBNR-SlideDeck-SREVM91934-badge.pdf?version=0",
               },
+              {
+                img: "/nebius-ai-leader-2026.png",
+                name: "Nebius AI Leader Certification",
+                issuer: "Nebius Academy",
+                verifyUrl: "https://www.credly.com/badges/6b5bb4de-d820-4738-b9f2-b5ba0fa890c3/public_url",
+              },
+              {
+                img: "/nebius-agentic-ai-builder-2026.png",
+                name: "Nebius Agentic AI Builder Certification",
+                issuer: "Nebius Academy",
+                verifyUrl: "https://www.credly.com/badges/72adb26a-7119-47c9-9a75-001da78ea895/public_url",
+              },
             ].map((c) => (
               <a
                 key={c.name}
