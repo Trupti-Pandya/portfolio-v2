@@ -1,0 +1,215 @@
+.page {
+  --gut: 12px;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  padding-bottom: calc(176px + env(safe-area-inset-bottom));
+}
+.dim { color: var(--muted) }
+.ok { color: var(--accent) }
+.wait { color: var(--muted) }
+
+/* ── window ── */
+.window {
+  margin: 12px var(--gut) 0;
+  border: 1px solid var(--grey2);
+  border-radius: 12px;
+  background: var(--paper);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--accent-glow), 0 30px 80px -40px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.chrome {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--grey);
+  background: var(--paper2);
+  font-size: 11px; color: var(--muted);
+}
+.lights { display: flex; gap: 6px }
+.lights i { width: 10px; height: 10px; border-radius: 50%; background: var(--grey2) }
+.lights i:first-child { background: var(--accent) }
+.path { flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.pid { font-size: 10px }
+
+.term { padding: 16px 14px 24px; font-size: 13px; line-height: 1.6 }
+
+/* boot */
+.boot { list-style: none; margin-bottom: 20px; font-size: 12px; color: var(--muted) }
+.boot li { animation: line .01s steps(1) both }
+@keyframes line { from { opacity: 0 } }
+
+/* whoami */
+.whoami { padding: 6px 0 24px; border-bottom: 1px dashed var(--grey2); margin-bottom: 8px }
+.ps1 { color: var(--muted) }
+.ps1 span, .ps { color: var(--accent) }
+.name {
+  margin: 10px 0 8px;
+  font-family: var(--display); font-weight: 900;
+  font-size: clamp(52px, 16vw, 120px); line-height: 0.9; letter-spacing: -0.03em;
+}
+.name em { color: var(--accent); font-style: italic; display: block }
+.caret { display: inline-block; width: 0.28em; height: 0.75em; margin-left: 0.08em; background: var(--accent); animation: blink 1s steps(1) infinite; vertical-align: -0.05em }
+@keyframes blink { 50% { opacity: 0 } }
+.role { font-family: var(--sans); font-size: 16px; font-weight: 600 }
+.kv { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 16px 0; background: var(--grey); border: 1px solid var(--grey) }
+.kv div { background: var(--paper); padding: 10px }
+.kv dt { font-size: 10px; color: var(--muted) }
+.kv dd { font-size: 20px; color: var(--accent) }
+.kv .live { font-size: 12px; padding-top: 6px }
+.ctaRow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
+.btn, .btnLime {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 46px; padding: 0 14px;
+  font-family: var(--mono); font-size: 13px; text-decoration: none;
+  border: 1px solid var(--grey2); color: var(--ink); border-radius: 6px;
+}
+.btnLime { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500 }
+.btn:hover { border-color: var(--accent); color: var(--accent) }
+
+/* steps */
+.step { scroll-margin-top: 56px; border-bottom: 1px dashed var(--grey2) }
+.stepHead {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  min-height: 52px; padding: 6px 0;
+}
+.stepHead::-webkit-details-marker { display: none }
+.stepHead:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.stepIcon { color: var(--accent); transition: transform .2s }
+details[open] > .stepHead .stepIcon { transform: rotate(90deg) }
+.stepCall { flex: 1; min-width: 0; font-size: 14px; font-weight: 500; overflow-wrap: anywhere }
+.fn { color: var(--accent) }
+.arg { color: var(--ink) }
+.stepMs { font-size: 10px; color: var(--muted); white-space: nowrap }
+.stepBody { padding: 4px 0 22px 18px; border-left: 1px solid var(--grey2); margin-left: 4px }
+
+.h { font-family: var(--display); font-weight: 900; font-size: 28px; line-height: 1.1; margin-bottom: 12px }
+.h em { color: var(--accent); font-style: italic }
+.quote { color: var(--accent); margin-bottom: 12px }
+.p { font-family: var(--sans); font-size: 15px; line-height: 1.65; color: var(--muted); margin-bottom: 12px }
+
+/* tree */
+.tree { list-style: none }
+.tree summary {
+  list-style: none; cursor: pointer;
+  display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 2px 8px;
+  min-height: 48px; padding: 4px 0;
+}
+.tree summary::-webkit-details-marker { display: none }
+.tree summary:focus-visible { outline: 2px solid var(--accent) }
+.branch { color: var(--mid) }
+.dir { color: var(--accent) }
+.tree summary .dim { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px }
+.meter { grid-column: 2 / -1; font-size: 11px; color: var(--accent); letter-spacing: 1px }
+.meter span { color: var(--grey2) }
+.leaves { list-style: none; margin: 0 0 10px 26px; padding-left: 12px; border-left: 1px solid var(--grey2); font-size: 12px; display: flex; flex-direction: column; gap: 4px }
+.leaves li { display: flex; justify-content: space-between; gap: 8px }
+.leaves b { font-weight: 400; color: var(--accent) }
+.leaves .dim { display: block; line-height: 1.6; margin-top: 4px }
+
+/* projects */
+.projects { list-style: none; display: flex; flex-direction: column; gap: 22px }
+.proj { padding-top: 4px }
+.projMeta { font-size: 11px; color: var(--muted) }
+.projMeta span { color: var(--mid) }
+.projName { font-family: var(--display); font-weight: 900; font-size: 28px; line-height: 1.1; margin: 4px 0 8px }
+.result { font-family: var(--sans); font-size: 14px; line-height: 1.6; padding: 10px 12px; background: var(--accent-glow); border: 1px solid var(--accent-dim); margin-bottom: 10px }
+.result span { font-family: var(--mono); color: var(--accent); font-size: 12px }
+.deps { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.6 }
+
+/* trace */
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px }
+.metrics div { border: 1px solid var(--grey2); padding: 10px; display: flex; flex-direction: column-reverse }
+.metrics dd { font-family: var(--display); font-weight: 900; font-size: 30px; color: var(--accent); line-height: 1.05 }
+.metrics dt { font-size: 10px; color: var(--muted) }
+.trace { margin-bottom: 18px }
+.traceHead { margin-bottom: 8px; line-height: 1.5 }
+.traceHead strong { font-weight: 500; font-size: 15px }
+.traceSteps { list-style: none; display: flex; flex-direction: column; gap: 10px }
+.traceSteps li { display: grid; grid-template-columns: 24px 1fr; gap: 8px; font-family: var(--sans); font-size: 14px; line-height: 1.6; color: var(--muted) }
+.stepNo { font-family: var(--mono); font-size: 11px; color: var(--accent); padding-top: 3px }
+.edu { font-size: 12px; margin-top: 6px; line-height: 1.6 }
+
+/* certs */
+.certs { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px }
+.cert {
+  display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 12px;
+  min-height: 64px; padding: 8px 10px;
+  border: 1px solid var(--grey); border-radius: 8px; background: var(--paper2);
+  text-decoration: none; color: var(--ink);
+}
+.cert:hover { border-color: var(--accent) }
+.certImg { width: 48px; height: 48px; object-fit: contain }
+.certText { display: flex; flex-direction: column; min-width: 0; font-size: 11px }
+.certName { font-family: var(--sans); font-size: 14px; font-weight: 600; line-height: 1.3 }
+.certOk { font-size: 11px; color: var(--accent-ink); background: var(--accent); padding: 2px 6px; border-radius: 4px }
+
+/* contact */
+.chatMock { border: 1px solid var(--grey2); border-radius: 8px; padding: 12px; margin: 4px 0 16px; display: flex; flex-direction: column; gap: 10px; font-family: var(--sans); font-size: 14px; line-height: 1.55 }
+.youTag, .botTag { display: inline-block; font-family: var(--mono); font-size: 10px; margin-right: 8px; padding: 1px 6px; border-radius: 4px }
+.youTag { border: 1px solid var(--grey2); color: var(--muted) }
+.botTag { background: var(--accent); color: var(--accent-ink) }
+.links { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px }
+.link {
+  display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  min-height: 60px; padding: 8px 12px;
+  border: 1px solid var(--grey2); border-radius: 8px; text-decoration: none; color: var(--ink);
+  font-size: 14px; overflow-wrap: anywhere;
+}
+.link .dim { font-size: 11px }
+.link:hover { border-color: var(--accent) }
+.exit { margin-top: 24px; font-size: 11px; color: var(--muted) }
+
+.btn:focus-visible, .btnLime:focus-visible, .cert:focus-visible, .link:focus-visible, .chip:focus-visible, .run:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+
+/* ── command dock ── */
+.dock {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+  padding: 10px var(--gut) calc(10px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--grey2);
+}
+.out { font-size: 11px; color: var(--accent); margin-bottom: 8px; min-height: 1.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gut) * -1) 8px; padding: 0 var(--gut) }
+.chips::-webkit-scrollbar { display: none }
+.chip {
+  flex: 0 0 auto; min-height: 44px; padding: 0 14px;
+  font-family: var(--mono); font-size: 12px; color: var(--ink);
+  background: var(--paper2); border: 1px solid var(--grey2); border-radius: 999px;
+}
+.chip:active { background: var(--accent); color: var(--accent-ink) }
+.prompt {
+  display: flex; align-items: center; gap: 8px;
+  min-height: 48px; padding: 0 4px 0 12px;
+  border: 1px solid var(--accent); border-radius: 8px; background: var(--paper);
+}
+.ps { font-size: 14px }
+.input {
+  flex: 1; min-width: 0; height: 44px;
+  background: transparent; border: 0; outline: 0;
+  font-family: var(--mono); font-size: 16px; color: var(--ink);
+  caret-color: var(--accent);
+}
+.input::placeholder { color: var(--mid) }
+.run { width: 44px; height: 40px; border: 0; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-size: 18px }
+
+@media (min-width: 900px) {
+  .page { --gut: 32px; padding-bottom: 150px }
+  .window { max-width: 960px; margin: 32px auto 0 }
+  .term { padding: 28px 36px 40px; font-size: 14px }
+  .kv { grid-template-columns: repeat(4, 1fr) }
+  .ctaRow { display: flex }
+  .metrics { grid-template-columns: repeat(4, 1fr) }
+  .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 28px }
+  .dock { left: 50%; right: auto; width: min(960px, calc(100% - 64px)); transform: translateX(-50%); bottom: 16px; border: 1px solid var(--grey2); border-radius: 12px; padding-bottom: 10px }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot li, .caret { animation: none }
+  .stepIcon { transition: none }
+}
