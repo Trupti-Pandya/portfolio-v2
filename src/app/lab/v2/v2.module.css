@@ -1,0 +1,185 @@
+.page {
+  --gut: 16px;
+  --gap: 10px;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); vertical-align: 1px }
+
+/* ── masthead ── */
+.mast { padding: 20px var(--gut) 28px; border-bottom: 1px solid var(--grey) }
+.mastRow {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding-bottom: 10px; border-bottom: 3px double var(--grey2);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+}
+.mastRow span:first-child { color: var(--accent) }
+.title {
+  display: flex; flex-direction: column;
+  margin: 18px 0 16px;
+  font-family: var(--display); font-weight: 900;
+  line-height: 0.82; letter-spacing: -0.045em;
+}
+.t1 { font-size: clamp(76px, 25vw, 200px) }
+.t2 { font-size: clamp(76px, 25vw, 200px); font-style: italic; color: var(--accent); align-self: flex-end; padding-right: 0.04em }
+.t2 i { color: var(--ink); font-style: normal }
+.deck { font-size: 17px; line-height: 1.5; color: var(--muted); max-width: 46ch; column-rule: 1px solid var(--grey) }
+.deck strong { color: var(--ink); font-weight: 600 }
+.mastCta { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); margin-top: 22px }
+.btnLime, .btnGhost {
+  min-height: 52px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 13px; text-decoration: none; border-radius: 999px;
+}
+.btnLime { background: var(--accent); color: var(--accent-ink); font-weight: 500 }
+.btnGhost { border: 1px solid var(--grey2); color: var(--ink) }
+
+/* ── ticker ── */
+.ticker { overflow: hidden; border-bottom: 1px solid var(--grey); padding: 12px 0; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent) }
+.tickerTrack { display: flex; width: max-content; animation: tick 40s linear infinite }
+.tickerTrack span { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; padding-right: 18px }
+.tickerTrack b { color: var(--accent); font-weight: 400; padding-left: 18px }
+@keyframes tick { to { transform: translateX(-50%) } }
+
+/* ── bento ── */
+.bento {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap);
+  padding: var(--gap) var(--gut) 0; max-width: 1240px; margin: 0 auto;
+}
+.tile {
+  position: relative; overflow: hidden;
+  border: 1px solid var(--grey); border-radius: 18px;
+  background: var(--paper); padding: 18px;
+}
+.wide, .full { grid-column: 1 / -1 }
+.kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--muted); line-height: 1.5 }
+.h2 { font-family: var(--display); font-weight: 900; font-size: 34px; line-height: 1.02; margin: 10px 0 14px }
+.h2 em, .sectionTitle em, .contactH em { color: var(--accent); font-style: italic }
+.h3 { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--accent) }
+.copy { font-size: 15px; line-height: 1.65; color: var(--muted) }
+.copyHi { font-size: 15px; line-height: 1.6; color: var(--ink); margin-top: 12px; padding-left: 12px; border-left: 2px solid var(--accent) }
+.line { margin-top: 14px; font-family: var(--mono); font-size: 11px; color: var(--mid) }
+.sectionTitle {
+  font-family: var(--display); font-weight: 900; font-size: clamp(40px, 12vw, 72px);
+  line-height: 1; letter-spacing: -0.02em; padding: 36px 2px 6px; scroll-margin-top: 16px;
+}
+
+.stat { display: flex; flex-direction: column; justify-content: space-between; min-height: 132px }
+.stat.wide { flex-direction: row; align-items: flex-end; min-height: 0 }
+.statNum { font-family: var(--display); font-weight: 900; font-size: 56px; line-height: 1; color: var(--accent) }
+
+.metrics { background: var(--accent); border-color: var(--accent); color: var(--accent-ink) }
+.metrics .kicker { color: color-mix(in srgb, var(--accent-ink) 75%, var(--accent)) }
+.metricGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 12px; margin-top: 14px }
+.metricGrid div { display: flex; flex-direction: column; gap: 2px }
+.metricGrid dd { font-family: var(--display); font-weight: 900; font-size: 40px; line-height: 1 }
+.metricGrid dt { font-size: 12px; line-height: 1.35; font-weight: 500 }
+
+.chat { display: flex; flex-direction: column; gap: 10px }
+.qUser { align-self: flex-end; max-width: 85%; background: var(--paper2); border: 1px solid var(--grey2); padding: 10px 14px; border-radius: 16px 16px 4px 16px; font-size: 14px }
+.qBot { max-width: 92%; font-family: var(--display); font-style: italic; font-weight: 900; font-size: 19px; line-height: 1.35 }
+.chatBar { display: flex; justify-content: space-between; min-height: 44px; align-items: center; padding: 0 16px; border: 1px solid var(--grey2); border-radius: 999px; font-family: var(--mono); font-size: 12px; color: var(--mid) }
+.chatBar span:last-child { color: var(--accent) }
+
+/* credentials strip */
+.certs { padding-right: 0 }
+.tileHead { display: flex; justify-content: space-between; align-items: baseline; padding-right: 18px; margin-bottom: 14px }
+.certStrip {
+  list-style: none; display: flex; gap: var(--gap); overflow-x: auto;
+  scroll-snap-type: x mandatory; scroll-padding-left: 0; padding-right: 18px; padding-bottom: 4px; scrollbar-width: none;
+}
+.certStrip::-webkit-scrollbar { display: none }
+.certStrip li { flex: 0 0 64%; max-width: 220px; scroll-snap-align: start }
+.cert {
+  position: relative; height: 100%;
+  display: flex; flex-direction: column; gap: 10px; padding: 16px;
+  border-radius: 14px; background: var(--paper2); border: 1px solid var(--grey);
+  text-decoration: none; color: var(--ink);
+}
+.cert:hover { border-color: var(--accent) }
+.certImg { width: 84px; height: 84px; object-fit: contain }
+.certName { font-size: 14px; font-weight: 600; line-height: 1.3 }
+.certIssuer { margin-top: auto; font-family: var(--mono); font-size: 11px; color: var(--accent) }
+.newTag { position: absolute; top: 12px; right: 12px; font-family: var(--mono); font-size: 10px; background: var(--accent); color: var(--accent-ink); padding: 2px 7px; border-radius: 999px }
+
+/* projects */
+.proj { padding-top: 22px }
+.projBig {
+  position: absolute; right: -6px; top: -22px;
+  font-family: var(--display); font-weight: 900; font-size: 140px; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1px var(--grey2); pointer-events: none;
+}
+.projName { position: relative; font-family: var(--display); font-weight: 900; font-size: 34px; line-height: 1.05; margin: 6px 0 10px }
+.pull { margin: 14px 0; font-family: var(--display); font-style: italic; font-weight: 900; font-size: 18px; line-height: 1.4; color: var(--ink) }
+.stack { list-style: none; display: flex; flex-wrap: wrap; gap: 6px }
+.stack li { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--grey2); border-radius: 999px; padding: 4px 10px }
+.more { display: flex; align-items: center; justify-content: space-between; min-height: 48px; margin-top: 14px; padding-top: 4px; border-top: 1px solid var(--grey); font-family: var(--mono); font-size: 12px; color: var(--accent); text-decoration: none }
+
+/* skills */
+.skill { grid-column: 1 / -1 }
+.skillTitle { font-size: 19px; font-weight: 700; margin: 6px 0 12px; line-height: 1.2 }
+.meter { list-style: none; display: flex; flex-direction: column; gap: 10px }
+.meter li { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; font-size: 13px }
+.meter b { font-family: var(--mono); font-weight: 400; color: var(--accent) }
+.meter li > i { grid-column: 1 / -1; display: block; height: 3px; background: var(--grey); border-radius: 3px }
+.meter li > i > i { display: block; height: 100%; background: var(--accent); border-radius: 3px }
+.chipLine { margin-top: 14px; font-family: var(--mono); font-size: 11px; line-height: 1.7; color: var(--mid) }
+
+/* experience */
+.roleHead { display: flex; gap: 14px; align-items: center; margin-bottom: 12px }
+.roleYear { font-family: var(--display); font-weight: 900; font-size: 48px; color: var(--accent); writing-mode: vertical-rl; transform: rotate(180deg); line-height: 1 }
+.bullets { padding-left: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.6; color: var(--muted); margin-bottom: 14px }
+.bullets li::marker { color: var(--accent) }
+
+/* contact */
+.contact { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); padding: 26px 18px; scroll-margin-top: 16px }
+.contactH { font-family: var(--display); font-weight: 900; font-size: clamp(40px, 12vw, 80px); line-height: 0.95; letter-spacing: -0.02em }
+.contactH em { color: var(--accent-ink); text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 6px }
+.contactSub { margin: 16px 0 20px; font-size: 15px; line-height: 1.6; font-weight: 500 }
+.contactLinks { list-style: none; display: flex; flex-direction: column; border-top: 1px solid var(--accent-ink) }
+.contactLinks a {
+  display: grid; grid-template-columns: 76px 1fr auto; align-items: center; gap: 8px;
+  min-height: 56px; border-bottom: 1px solid var(--accent-ink);
+  font-size: 15px; font-weight: 600; color: var(--accent-ink); text-decoration: none; overflow-wrap: anywhere;
+}
+.contactLinks span { font-family: var(--mono); font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em }
+.contactFacts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; font-family: var(--mono); font-size: 11px }
+.contactFacts div { display: flex; gap: 6px }
+.contactFacts dd { font-weight: 500 }
+
+.footer { display: flex; justify-content: space-between; gap: 12px; padding: 28px var(--gut) 40px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted) }
+
+.btnLime:focus-visible, .btnGhost:focus-visible, .cert:focus-visible, .more:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px }
+.contactLinks a:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px }
+
+/* scroll-driven reveal: progressive enhancement only */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .tile { animation: tileIn linear both; animation-timeline: view(); animation-range: entry 0% entry 45% }
+    @keyframes tileIn { from { opacity: 0.15; transform: translateY(28px) scale(0.97) } }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tickerTrack { animation: none; flex-wrap: wrap; width: auto; padding: 0 var(--gut) }
+}
+
+/* ── desktop: 4-col bento ── */
+@media (min-width: 900px) {
+  .page { --gut: 40px; --gap: 14px }
+  .mast { display: grid; grid-template-columns: 1fr 360px; gap: 0 40px; align-items: end }
+  .mastRow, .title { grid-column: 1 / -1 }
+  .title { flex-direction: row; gap: 0.2em; flex-wrap: wrap }
+  .t2 { align-self: auto }
+  .mastCta { margin-top: 0 }
+  .bento { grid-template-columns: repeat(4, minmax(0, 1fr)) }
+  .wide { grid-column: span 2 }
+  .skill { grid-column: span 2 }
+  .about { grid-row: span 2 }
+  .stat.wide { grid-column: span 2 }
+  .certStrip li { flex-basis: 200px }
+  .proj.full { grid-column: span 4 }
+  .role { grid-column: span 4 }
+  .contactLinks { max-width: 640px }
+}
