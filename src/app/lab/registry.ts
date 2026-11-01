@@ -17,21 +17,24 @@ export const LAB_PAGES: LabPage[] = [
   },
   {
     href: "/lab/v1",
-    title: "Concept 1",
-    blurb: "Redesign concept 1.",
-    status: "in progress",
+    title: "Concept 1 — Refined Signal",
+    blurb:
+      "The live layout tightened for phones: thumb-reach bottom tab bar, tap-to-expand project impact, 2-up credentials grid.",
+    status: "ready",
   },
   {
     href: "/lab/v2",
-    title: "Concept 2",
-    blurb: "Redesign concept 2.",
-    status: "in progress",
+    title: "Concept 2 — Editorial Bento",
+    blurb:
+      "Magazine masthead and rounded bento grid leading with impact numbers, plus a swipeable credentials strip.",
+    status: "ready",
   },
   {
     href: "/lab/v3",
-    title: "Concept 3",
-    blurb: "Redesign concept 3.",
-    status: "in progress",
+    title: "Concept 3 — Agent Shell",
+    blurb:
+      "The whole page as one agent terminal session: collapsible tool-call sections and a working command bar.",
+    status: "ready",
   },
   {
     href: "/",
