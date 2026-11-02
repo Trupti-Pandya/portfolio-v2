@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { CREDENTIALS, PROJECTS, SKILLS, EXPERIENCE, CONTACTS, EDUCATION } from "./content";
+import { CREDENTIALS, PROJECTS, SKILLS, EXPERIENCE, CONTACTS, EDUCATION } from "./portfolio-content";
 
 const PUBLIC_DIR = join(process.cwd(), "public");
 
-describe("lab shared content", () => {
+describe("portfolio content", () => {
   it("carries the full credentials wall, including both Nebius badges", () => {
     expect(CREDENTIALS).toHaveLength(5);
     const names = CREDENTIALS.map((c) => c.name);

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import V1 from "./V1";
+import RefinedSignal, { ChatMock } from "@/components/refined-signal/RefinedSignal";
+import LabBanner from "./_shared/LabBanner";
 
 export const metadata: Metadata = {
   title: "Lab v1 — Refined Signal",
@@ -7,5 +8,20 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <V1 />;
+  return (
+    <RefinedSignal
+      chat={<ChatMock />}
+      banner={
+        <LabBanner
+          id="v1"
+          name="Refined Signal"
+          changes={[
+            "Same section order, tighter mobile rhythm: one column, 16px gutters, nothing hidden behind a hamburger.",
+            "Thumb-reach bottom tab bar on phones replaces the top hamburger menu.",
+            "Long copy (project impact, role logs) folds into tap-to-expand rows; credentials become a 2-up grid.",
+          ]}
+        />
+      }
+    />
+  );
 }

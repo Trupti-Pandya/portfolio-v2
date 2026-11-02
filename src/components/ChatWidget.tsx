@@ -208,16 +208,14 @@ export default function ChatWidget() {
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.innerWidth < 1024 || window.scrollY > window.innerHeight * 0.7);
-      const base = window.innerWidth < 768 ? 16 : 24; // matches .chat-fab CSS
-      const footer = document.querySelector(".footer");
-      if (footer) {
-        const top = footer.getBoundingClientRect().top;
-        // once the footer enters view, lift the bubble to sit 16px above it
-        const liftedBottom = window.innerHeight - top + 16;
-        setFabBottom(Math.max(base, liftedBottom));
-      } else {
-        setFabBottom(base);
-      }
+      let bottom = window.innerWidth < 768 ? 16 : 24; // matches .chat-fab CSS
+      // lift the bubble 16px above any visible fixed bar or in-view footer marked data-chat-fab-avoid
+      document.querySelectorAll<HTMLElement>(".footer, [data-chat-fab-avoid]").forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.height === 0 || r.top >= window.innerHeight) return;
+        bottom = Math.max(bottom, window.innerHeight - r.top + 16);
+      });
+      setFabBottom(bottom);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });

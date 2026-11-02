@@ -104,8 +104,18 @@
   outline: 2px solid var(--accent); outline-offset: 2px;
 }
 
-.chat {
-  margin-top: 32px;
+.chat { margin-top: 32px }
+/* The live ChatWidget fills its parent (absolute layers inside .terminal-box), so it needs a sized box. */
+.liveChat { position: relative; display: flex; flex-direction: column; height: 340px }
+/* globals.css shifts and masks the portrait for the old full-bleed hero backdrop; here it sits in its own panel. */
+@media (max-width: 1024px) {
+  .liveChat :global(.ascii-bg-wrap) {
+    transform: none;
+    -webkit-mask-image: radial-gradient(75% 75% at 50% 45%, #000 45%, transparent 85%);
+            mask-image: radial-gradient(75% 75% at 50% 45%, #000 45%, transparent 85%);
+  }
+}
+.chatMock {
   border: 1px solid var(--grey2);
   background: var(--paper);
   padding: 14px;
@@ -282,6 +292,7 @@
   .hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px 56px; padding: 72px 0 80px; align-items: end }
   .hero > *:not(.chat) { grid-column: 1 }
   .chat { grid-column: 2; grid-row: 1 / span 6; margin-top: 0; align-self: end }
+  .liveChat { height: 520px }
   .cta { grid-template-columns: repeat(3, auto); justify-content: start }
   .btnLime { grid-column: auto }
   .section { padding-top: 88px }

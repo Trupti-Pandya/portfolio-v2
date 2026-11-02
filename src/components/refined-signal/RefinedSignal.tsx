@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
-import LabBanner from "./_shared/LabBanner";
 import {
   PROFILE, STATS, ABOUT, SKILLS, PROJECTS, EXPERIENCE, EDUCATION,
   CREDENTIALS, CONTACT, CONTACTS, CHAT_MOCK, CHAT_PROMPTS,
-} from "./_shared/content";
-import s from "./v1.module.css";
+} from "@/lib/portfolio-content";
+import s from "./RefinedSignal.module.css";
 
 const SECTIONS = [
   { id: "about", label: "about" },
@@ -26,7 +25,30 @@ function SecHead({ num, file, title, accent }: { num: string; file: string; titl
   );
 }
 
-export default function V1() {
+/** Static chat preview for the /lab demo; the homepage passes the live ChatWidget instead. */
+export function ChatMock() {
+  return (
+    <figure className={s.chatMock} aria-label="Chat assistant preview (static mockup)">
+      <figcaption className={s.chatHead}>
+        <span className={s.dot} /> ask_trupti.ai <span className={s.chatTag}>mockup</span>
+      </figcaption>
+      {CHAT_MOCK.map((m) => (
+        <p key={m.text} className={m.from === "user" ? s.msgUser : s.msgBot}>{m.text}</p>
+      ))}
+      <div className={s.chatChips}>
+        {CHAT_PROMPTS.map((p) => <span key={p}>{p}</span>)}
+      </div>
+      <div className={s.chatInput} aria-hidden="true">Ask about RAG, evals, availability…<span>↵</span></div>
+    </figure>
+  );
+}
+
+/** Sized frame for the live ChatWidget in the hero's chat slot. */
+export function LiveChatFrame({ children }: { children: ReactNode }) {
+  return <div className={s.liveChat}>{children}</div>;
+}
+
+export default function RefinedSignal({ chat, banner }: { chat: ReactNode; banner?: ReactNode }) {
   const [active, setActive] = useState("");
   const [skill, setSkill] = useState(SKILLS[0].id);
   const cur = SKILLS.find((k) => k.id === skill) ?? SKILLS[0];
@@ -45,15 +67,7 @@ export default function V1() {
 
   return (
     <div className={s.page}>
-      <LabBanner
-        id="v1"
-        name="Refined Signal"
-        changes={[
-          "Same section order, tighter mobile rhythm: one column, 16px gutters, nothing hidden behind a hamburger.",
-          "Thumb-reach bottom tab bar on phones replaces the top hamburger menu.",
-          "Long copy (project impact, role logs) folds into tap-to-expand rows; credentials become a 2-up grid.",
-        ]}
-      />
+      {banner}
 
       <div className={s.topbar}>
         <span className={s.brand}><span>sys/</span>trupti_pandya<span>.llm</span></span>
@@ -67,9 +81,9 @@ export default function V1() {
 
       <main className={s.main}>
         {/* HERO */}
-        <section className={s.hero} aria-labelledby="v1-name">
+        <section className={s.hero} aria-labelledby="rs-name">
           <p className={s.prompt}>initialising portfolio.exe<span className={s.caret} aria-hidden="true" /></p>
-          <h1 id="v1-name" className={s.name}>
+          <h1 id="rs-name" className={s.name}>
             <span>{PROFILE.first}</span>
             <em>{PROFILE.last}</em>
           </h1>
@@ -88,18 +102,7 @@ export default function V1() {
             <a href="#contact" className={s.btnGhost}>./contact.sh</a>
           </div>
 
-          <figure className={s.chat} aria-label="Chat assistant preview (static mockup)">
-            <figcaption className={s.chatHead}>
-              <span className={s.dot} /> ask_trupti.ai <span className={s.chatTag}>mockup</span>
-            </figcaption>
-            {CHAT_MOCK.map((m) => (
-              <p key={m.text} className={m.from === "user" ? s.msgUser : s.msgBot}>{m.text}</p>
-            ))}
-            <div className={s.chatChips}>
-              {CHAT_PROMPTS.map((p) => <span key={p}>{p}</span>)}
-            </div>
-            <div className={s.chatInput} aria-hidden="true">Ask about RAG, evals, availability…<span>↵</span></div>
-          </figure>
+          <div className={s.chat}>{chat}</div>
         </section>
 
         {/* ABOUT */}
@@ -119,9 +122,9 @@ export default function V1() {
               <button
                 key={k.id}
                 role="tab"
-                id={`v1-tab-${k.id}`}
+                id={`rs-tab-${k.id}`}
                 aria-selected={skill === k.id}
-                aria-controls="v1-skill-panel"
+                aria-controls="rs-skill-panel"
                 className={s.tab}
                 onClick={() => setSkill(k.id)}
               >
@@ -129,7 +132,7 @@ export default function V1() {
               </button>
             ))}
           </div>
-          <div id="v1-skill-panel" role="tabpanel" aria-labelledby={`v1-tab-${cur.id}`} className={s.panel} key={cur.id}>
+          <div id="rs-skill-panel" role="tabpanel" aria-labelledby={`rs-tab-${cur.id}`} className={s.panel} key={cur.id}>
             <p className={s.panelId}>module/{cur.id}</p>
             <h3 className={s.panelTitle}>{cur.title}</h3>
             <ul className={s.chips}>{cur.chips.map((c) => <li key={c}>{c}</li>)}</ul>
@@ -242,12 +245,12 @@ export default function V1() {
         </section>
       </main>
 
-      <footer className={s.footer}>
+      <footer className={s.footer} data-chat-fab-avoid>
         <span>© 2026 TRUPTI PANDYA · LLM ENGINEER</span>
         <span><span className={s.dot} /> AVAILABLE FOR HIRE</span>
       </footer>
 
-      <div className={s.tabbar} role="navigation" aria-label="Sections">
+      <div className={s.tabbar} role="navigation" aria-label="Sections" data-chat-fab-avoid>
         {SECTIONS.map((x) => (
           <a key={x.id} href={`#${x.id}`} className={active === x.id ? s.on : undefined}
             aria-current={active === x.id ? "location" : undefined}>
