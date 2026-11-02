@@ -36,7 +36,7 @@ function Step({ id, tool, arg, ms, children }: { id: string; tool: string; arg: 
   );
 }
 
-export default function V3() {
+export default function V3({ preview = false }: { preview?: boolean }) {
   const [value, setValue] = useState("");
   const [out, setOut] = useState("type help, or tap a command ↓");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -55,7 +55,7 @@ export default function V3() {
 
   return (
     <div className={s.page}>
-      <LabBanner
+      {!preview && <LabBanner
         id="v3"
         name="Agent Shell"
         changes={[
@@ -63,7 +63,7 @@ export default function V3() {
           "A working command bar (help, projects, certs, cv…) and tap-chips pinned above the thumb.",
           "Experience reads as an execution trace; credentials print as verification results.",
         ]}
-      />
+      />}
 
       <div className={s.window}>
         <div className={s.chrome} aria-hidden="true">

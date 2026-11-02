@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
 import RefinedSignal, { ChatMock } from "@/components/refined-signal/RefinedSignal";
 import LabBanner from "./_shared/LabBanner";
+import PreviewExit from "../_preview/PreviewExit";
+import { isPreview, type LabSearchParams } from "../_preview/preview";
 
 export const metadata: Metadata = {
   title: "Lab v1 — Refined Signal",
   robots: { index: false, follow: false },
 };
 
-export default function Page() {
+export default async function Page({ searchParams }: { searchParams: LabSearchParams }) {
+  if (await isPreview(searchParams)) {
+    return (
+      <>
+        <PreviewExit />
+        <RefinedSignal chat={<ChatMock />} />
+      </>
+    );
+  }
   return (
     <RefinedSignal
       chat={<ChatMock />}

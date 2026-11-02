@@ -5,6 +5,8 @@ export type LabPage = {
   title: string;
   blurb: string;
   status: LabStatus;
+  /** Concept pages that support fullscreen preview (?preview=1). */
+  preview?: boolean;
 };
 
 export const LAB_PAGES: LabPage[] = [
@@ -21,6 +23,7 @@ export const LAB_PAGES: LabPage[] = [
     blurb:
       "The live layout tightened for phones: thumb-reach bottom tab bar, tap-to-expand project impact, 2-up credentials grid.",
     status: "ready",
+    preview: true,
   },
   {
     href: "/lab/v2",
@@ -28,6 +31,7 @@ export const LAB_PAGES: LabPage[] = [
     blurb:
       "Magazine masthead and rounded bento grid leading with impact numbers, plus a swipeable credentials strip.",
     status: "ready",
+    preview: true,
   },
   {
     href: "/lab/v3",
@@ -35,6 +39,7 @@ export const LAB_PAGES: LabPage[] = [
     blurb:
       "The whole page as one agent terminal session: collapsible tool-call sections and a working command bar.",
     status: "ready",
+    preview: true,
   },
   {
     href: "/",

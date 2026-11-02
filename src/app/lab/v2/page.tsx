@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import LabBanner from "../v1/_shared/LabBanner";
 import HeroPortrait from "@/components/HeroPortrait";
+import PreviewExit from "../_preview/PreviewExit";
+import { isPreview, type LabSearchParams } from "../_preview/preview";
 import {
   PROFILE, STATS, ABOUT, SKILLS, PROJECTS, EXPERIENCE, EDUCATION, IMPACT_METRICS,
   CREDENTIALS, CONTACT, CONTACTS, CHAT_MOCK,
@@ -15,18 +17,19 @@ export const metadata: Metadata = {
 
 const TICKER = SKILLS.flatMap((k) => k.chips.slice(0, 3));
 
-export default function Page() {
+export default async function Page({ searchParams }: { searchParams: LabSearchParams }) {
+  const preview = await isPreview(searchParams);
   return (
     <div className={s.page}>
-      <LabBanner
+      {preview ? <PreviewExit /> : <LabBanner
         id="v2"
         name="Editorial Bento"
         changes={[
           "Magazine masthead and a bento grid replace the stacked full-width sections.",
           "Proof first: Zenithive impact numbers and the credentials strip sit near the top.",
-          "Pure server render with scroll-driven CSS reveals — no client JavaScript on the page.",
+          "Server render with scroll-driven CSS reveals; the only client script draws the ASCII cover portrait.",
         ]}
-      />
+      />}
 
       <header className={s.mast}>
         <div className={s.mastRow}>
