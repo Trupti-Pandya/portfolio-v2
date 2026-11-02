@@ -5,7 +5,7 @@ import styles from "./PreviewExit.module.css";
 export default function PreviewExit() {
   return (
     <Link href="/lab" className={styles.exit} data-lab-preview>
-      <span aria-hidden="true">✕</span> Exit preview
+      <span aria-hidden="true">←</span> Exit preview
     </Link>
   );
 }
