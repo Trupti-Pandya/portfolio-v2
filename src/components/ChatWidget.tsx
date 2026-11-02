@@ -110,7 +110,7 @@ function renderText(text: string, isAi: boolean) {
   );
 }
 
-export default function ChatWidget() {
+export default function ChatWidget({ portraitAlt }: { portraitAlt?: string } = {}) {
   const [provider, setProvider] = useState<Provider>("azure");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -388,7 +388,7 @@ export default function ChatWidget() {
           overflow: "hidden",
           pointerEvents: "none",
         }}
-        aria-hidden="true"
+        {...(portraitAlt ? { role: "img", "aria-label": portraitAlt } : { "aria-hidden": true })}
       >
         <AsciiArt
           src="/ascii-portrait.webp"

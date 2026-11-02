@@ -116,10 +116,17 @@
   }
 }
 .chatMock {
+  position: relative; overflow: hidden; min-height: 340px;
   border: 1px solid var(--grey2);
   background: var(--paper);
   padding: 14px;
   display: flex; flex-direction: column; gap: 10px;
+}
+.chatMock > :not(.mockPortrait) { position: relative; z-index: 1 }
+.mockPortrait {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.9;
+  -webkit-mask-image: radial-gradient(75% 75% at 50% 45%, #000 45%, transparent 85%);
+          mask-image: radial-gradient(75% 75% at 50% 45%, #000 45%, transparent 85%);
 }
 .chatHead { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--muted) }
 .chatTag { margin-left: auto; border: 1px solid var(--grey2); padding: 1px 6px; font-size: 10px }
@@ -293,6 +300,7 @@
   .hero > *:not(.chat) { grid-column: 1 }
   .chat { grid-column: 2; grid-row: 1 / span 6; margin-top: 0; align-self: end }
   .liveChat { height: 520px }
+  .chatMock { min-height: 520px; justify-content: flex-end }
   .cta { grid-template-columns: repeat(3, auto); justify-content: start }
   .btnLime { grid-column: auto }
   .section { padding-top: 88px }

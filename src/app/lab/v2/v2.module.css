@@ -53,6 +53,16 @@
   background: var(--paper); padding: 18px;
 }
 .wide, .full { grid-column: 1 / -1 }
+.cover { padding: 0; margin: 0; aspect-ratio: 4 / 3; display: flex; flex-direction: column; justify-content: flex-end }
+.coverArt {
+  position: absolute; inset: 0;
+  -webkit-mask-image: radial-gradient(80% 85% at 50% 40%, #000 50%, transparent 92%);
+          mask-image: radial-gradient(80% 85% at 50% 40%, #000 50%, transparent 92%);
+}
+.coverCap {
+  position: relative; display: flex; justify-content: space-between; gap: 12px; padding: 12px 18px;
+  background: linear-gradient(to top, var(--paper) 40%, transparent);
+}
 .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--muted); line-height: 1.5 }
 .h2 { font-family: var(--display); font-weight: 900; font-size: 34px; line-height: 1.02; margin: 10px 0 14px }
 .h2 em, .sectionTitle em, .contactH em { color: var(--accent); font-style: italic }
@@ -177,6 +187,7 @@
   .wide { grid-column: span 2 }
   .skill { grid-column: span 2 }
   .about { grid-row: span 2 }
+  .cover { grid-row: span 2; aspect-ratio: auto; min-height: 320px }
   .stat.wide { grid-column: span 2 }
   .certStrip li { flex-basis: 200px }
   .proj.full { grid-column: span 4 }

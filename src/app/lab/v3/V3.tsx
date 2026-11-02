@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import LabBanner from "../v1/_shared/LabBanner";
+import HeroPortrait from "@/components/HeroPortrait";
 import {
   PROFILE, STATS, ABOUT, SKILLS, PROJECTS, EXPERIENCE, EDUCATION, IMPACT_METRICS,
   CREDENTIALS, CONTACT, CONTACTS, CHAT_MOCK,
@@ -81,6 +82,7 @@ export default function V3() {
           </ol>
 
           <div className={s.whoami}>
+            <HeroPortrait resolution={110} className={s.avatar} />
             <p className={s.ps1}><span>$</span> whoami</p>
             <h1 className={s.name}>
               {PROFILE.first} <em>{PROFILE.last}</em><span className={s.caret} aria-hidden="true" />

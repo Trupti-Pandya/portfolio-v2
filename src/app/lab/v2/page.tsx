@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import LabBanner from "../v1/_shared/LabBanner";
+import HeroPortrait from "@/components/HeroPortrait";
 import {
   PROFILE, STATS, ABOUT, SKILLS, PROJECTS, EXPERIENCE, EDUCATION, IMPACT_METRICS,
   CREDENTIALS, CONTACT, CONTACTS, CHAT_MOCK,
@@ -52,6 +53,15 @@ export default function Page() {
       </div>
 
       <main className={s.bento}>
+        {/* cover portrait */}
+        <figure className={`${s.tile} ${s.wide} ${s.cover}`}>
+          <HeroPortrait resolution={180} className={s.coverArt} />
+          <figcaption className={s.coverCap}>
+            <span className={s.kicker}>cover · {PROFILE.first} {PROFILE.last}</span>
+            <span className={s.kicker}><span className={s.dot} /> {PROFILE.status}</span>
+          </figcaption>
+        </figure>
+
         {/* stats */}
         {STATS.map((x, i) => (
           <article key={x.label} className={`${s.tile} ${s.stat} ${i === 2 ? s.wide : ""}`}>

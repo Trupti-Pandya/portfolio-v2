@@ -1,4 +1,5 @@
 import ChatWidget from "@/components/ChatWidget";
+import { PORTRAIT_ALT } from "@/components/HeroPortrait";
 import RefinedSignal, { LiveChatFrame } from "@/components/refined-signal/RefinedSignal";
 
 export default function Home() {
@@ -6,7 +7,7 @@ export default function Home() {
     <RefinedSignal
       chat={
         <LiveChatFrame>
-          <ChatWidget />
+          <ChatWidget portraitAlt={PORTRAIT_ALT} />
         </LiveChatFrame>
       }
     />

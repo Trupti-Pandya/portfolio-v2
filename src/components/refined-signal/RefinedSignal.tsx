@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
+import HeroPortrait from "@/components/HeroPortrait";
 import {
   PROFILE, STATS, ABOUT, SKILLS, PROJECTS, EXPERIENCE, EDUCATION,
   CREDENTIALS, CONTACT, CONTACTS, CHAT_MOCK, CHAT_PROMPTS,
@@ -25,10 +26,11 @@ function SecHead({ num, file, title, accent }: { num: string; file: string; titl
   );
 }
 
-/** Static chat preview for the /lab demo; the homepage passes the live ChatWidget instead. */
+/** Static chat preview for the /lab demo, over the same portrait backdrop the live ChatWidget draws on the homepage. */
 export function ChatMock() {
   return (
     <figure className={s.chatMock} aria-label="Chat assistant preview (static mockup)">
+      <HeroPortrait resolution={160} className={s.mockPortrait} />
       <figcaption className={s.chatHead}>
         <span className={s.dot} /> ask_trupti.ai <span className={s.chatTag}>mockup</span>
       </figcaption>
