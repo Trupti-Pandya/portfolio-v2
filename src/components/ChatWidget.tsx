@@ -393,7 +393,7 @@ export default function ChatWidget() {
         aria-hidden="true"
       >
         <AsciiArt
-          src="/image.png"
+          src="/ascii-portrait.webp"
           charset="dense"
           color={ACCENT}
           animated={false}

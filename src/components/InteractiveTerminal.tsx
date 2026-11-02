@@ -208,7 +208,7 @@ export default function InteractiveTerminal() {
           aria-hidden="true"
         >
           <AsciiArt
-            src="/image.png"
+            src="/ascii-portrait.webp"
             charset="dense"
             color="#b8ff57"
             animated={false}

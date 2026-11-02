@@ -126,6 +126,10 @@ export const AsciiArt: React.FC<AsciiArtProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
+  const lastFullDrawRef = useRef<{
+    canvas: HTMLCanvasElement;
+    key: string;
+  } | null>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.1 });
 
   const shouldStartAnimation = animated && animateOnView ? isInView : animated;
@@ -267,6 +271,14 @@ export const AsciiArt: React.FC<AsciiArtProps> = ({
 
       if (containerWidth === 0 || containerHeight === 0) return;
 
+      // Thousands of fillText calls per draw: skip a full redraw that would
+      // repaint identical pixels onto the same canvas.
+      const isFullDraw = progress === 1 && matrixProgress === undefined;
+      const drawKey = `${containerWidth}x${containerHeight}@${dpr}`;
+      const last = lastFullDrawRef.current;
+      if (isFullDraw && last?.canvas === canvas && last.key === drawKey) return;
+      lastFullDrawRef.current = isFullDraw ? { canvas, key: drawKey } : null;
+
       canvas.width = containerWidth * dpr;
       canvas.height = containerHeight * dpr;
       canvas.style.width = `${containerWidth}px`;
@@ -306,6 +318,8 @@ export const AsciiArt: React.FC<AsciiArtProps> = ({
       const totalChars = rows * cols;
       const revealedChars = Math.floor(progress * totalChars);
 
+      ctx.globalAlpha = animationStyle === "fade" ? progress : 1;
+      let currentColor: string | null = null;
       let charIndex = 0;
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
@@ -341,9 +355,13 @@ export const AsciiArt: React.FC<AsciiArtProps> = ({
             }
           }
 
-          ctx.fillStyle = displayColor;
-          ctx.globalAlpha = animationStyle === "fade" ? progress : 1;
-          ctx.fillText(displayChar, cx, cy);
+          if (displayChar !== " ") {
+            if (displayColor !== currentColor) {
+              ctx.fillStyle = displayColor;
+              currentColor = displayColor;
+            }
+            ctx.fillText(displayChar, cx, cy);
+          }
 
           charIndex++;
         }
@@ -361,6 +379,10 @@ export const AsciiArt: React.FC<AsciiArtProps> = ({
       animationStyle,
     ]
   );
+
+  useIsomorphicLayoutEffect(() => {
+    lastFullDrawRef.current = null;
+  }, [drawCanvas]);
 
   useEffect(() => {
     if (!isLoaded || asciiData.length === 0) return;
