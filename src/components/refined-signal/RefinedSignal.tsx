@@ -87,7 +87,7 @@ export default function RefinedSignal({ chat, banner }: { chat: ReactNode; banne
             <span>{PROFILE.first}</span>
             <em>{PROFILE.last}</em>
           </h1>
-          <p className={s.role}>{PROFILE.role}</p>
+          <p className={s.heroRole}>{PROFILE.role}</p>
           <p className={s.line}>{PROFILE.line}</p>
 
           <dl className={s.stats}>

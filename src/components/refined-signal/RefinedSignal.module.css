@@ -75,7 +75,7 @@
 }
 .name em { color: var(--accent); font-style: italic; padding-left: 0.12em }
 @keyframes rise { from { opacity: 0; transform: translateY(18px) } }
-.role { margin-top: 22px; font-size: 17px; font-weight: 600; line-height: 1.35 }
+.heroRole { margin-top: 22px; font-size: 17px; font-weight: 600; line-height: 1.35 }
 .line { margin-top: 6px; font-family: var(--mono); font-size: 12px; color: var(--muted); line-height: 1.6 }
 
 .stats {
