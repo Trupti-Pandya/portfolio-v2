@@ -1,14 +1,15 @@
 /**
  * Single source of truth for site-wide identity, SEO, and structured data.
  *
- * Canonical domain: search engines must not see the same content on two domains
- * (truptipandya.dev AND truptipandya.com) as separate — that splits ranking
- * authority. We pick ONE canonical here; the other 301-redirects into it
- * (see next.config.ts). To make .com primary later, change SITE_URL below (or
- * set NEXT_PUBLIC_SITE_URL) and flip the redirect direction in next.config.ts.
+ * Canonical host: search engines must see ONE host, and it must be the one that
+ * answers 200. Vercel's Domains settings make www primary (the apex and .com
+ * 308-redirect to https://www.truptipandya.dev), so canonical, sitemap, robots,
+ * Open Graph and JSON-LD all use www. If the primary domain changes in Vercel,
+ * change it here (or set NEXT_PUBLIC_SITE_URL). Never add host redirects in
+ * next.config.ts: stacked on Vercel's own they caused a redirect loop.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://truptipandya.dev"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.truptipandya.dev"
 ).replace(/\/$/, "");
 
 export const PROFILE = {

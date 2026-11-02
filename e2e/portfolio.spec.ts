@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const SITE = "https://truptipandya.dev";
+const SITE = "https://www.truptipandya.dev";
 
 test.describe("homepage", () => {
   test("loads with the correct title and hero name", async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe("GEO/SEO endpoints", () => {
     const body = await res.text();
     expect(body).toContain("GPTBot");
     expect(body).toContain("PerplexityBot");
-    expect(body).toMatch(/Sitemap:\s*https:\/\/truptipandya\.dev\/sitemap\.xml/);
+    expect(body).toMatch(/Sitemap:\s*https:\/\/www\.truptipandya\.dev\/sitemap\.xml/);
   });
 
   test("sitemap.xml is valid XML for the canonical domain", async ({ request }) => {

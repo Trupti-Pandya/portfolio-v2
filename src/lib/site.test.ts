@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { SITE_URL, PROFILE, PROJECTS } from "./site";
 
 describe("SITE_URL", () => {
@@ -9,6 +9,18 @@ describe("SITE_URL", () => {
 
   it("has no trailing slash (canonical URLs are built by appending paths)", () => {
     expect(SITE_URL.endsWith("/")).toBe(false);
+  });
+
+  it("defaults to the www host Vercel serves (the apex 308-redirects to it)", async () => {
+    const saved = process.env.NEXT_PUBLIC_SITE_URL;
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+    vi.resetModules();
+    try {
+      const { SITE_URL: fresh } = await import("./site");
+      expect(fresh).toBe("https://www.truptipandya.dev");
+    } finally {
+      if (saved !== undefined) process.env.NEXT_PUBLIC_SITE_URL = saved;
+    }
   });
 });
 
