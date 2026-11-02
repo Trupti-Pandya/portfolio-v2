@@ -1,4 +1,5 @@
-// Regenerate public/ascii-portrait.webp from public/image.png.
+// Regenerate public/ascii-portrait.webp from assets/portrait-source.png.
+// The source PNG lives outside public/ so it is never served to visitors.
 // Run: node scripts/gen-ascii-portrait.mjs
 //
 // <AsciiArt objectFit="cover"> only ever samples the centred square of the
@@ -8,8 +9,9 @@ import sharp from "sharp";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const pub = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
-const src = join(pub, "image.png");
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const pub = join(root, "public");
+const src = join(root, "assets", "portrait-source.png");
 
 const { width, height } = await sharp(src).metadata();
 const side = Math.min(width, height);
